@@ -27,83 +27,123 @@ class _MainScreenState extends State<MainScreen> {
     await HiveService().init(); // Make sure Hive is initialized
     setState(() {
       jobs = jobController.getAllJobs(); // Load jobs
-      print("loading jobssss");
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Part-Time Job Tracker')),
+      backgroundColor: const Color(0xFF121212), // Grey background color
       body: Column(
         children: [
-          // Only display earnings if there are jobs
           if (jobs.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Total Earnings This Month: \$${jobController.getMonthlyEarnings().toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                'Total: \$${jobController.getMonthlyEarnings().toStringAsFixed(2)}€',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
           ],
           Expanded(
-            child: jobs.isNotEmpty 
-              ? ListView.builder(
-                  itemCount: jobs.length,
-                  itemBuilder: (context, index) {
-                    // Calculate and display hours worked and earnings
-                    List<WorkSession> sessions = jobController.getSessionsForJob(jobs[index].id!);
-                    double totalHoursWorked = sessions.fold(0.0, (sum, session) {
-                      if (session.date.month == DateTime.now().month &&
-                          session.date.year == DateTime.now().year) {
-                        return sum + session.hoursWorked;
-                      }
-                      return sum;
-                    });
-                    double totalEarnings = sessions.fold(0.0, (sum, session) {
-                      if (session.date.month == DateTime.now().month &&
-                          session.date.year == DateTime.now().year) {
-                        return sum + (session.hoursWorked * jobs[index].hourlyRate) + session.extraPay;
-                      }
-                      return sum;
-                    });
+            child: jobs.isNotEmpty
+                ? ListView.builder(
+              itemCount: jobs.length,
+              itemBuilder: (context, index) {
+                List<WorkSession> sessions = jobController.getSessionsForJob(jobs[index].id!);
+                double totalHoursWorked = sessions.fold(0.0, (sum, session) {
+                  if (session.date.month == DateTime.now().month &&
+                      session.date.year == DateTime.now().year) {
+                    return sum + session.hoursWorked;
+                  }
+                  return sum;
+                });
+                double totalEarnings = sessions.fold(0.0, (sum, session) {
+                  if (session.date.month == DateTime.now().month &&
+                      session.date.year == DateTime.now().year) {
+                    return sum + (session.hoursWorked * jobs[index].hourlyRate) + session.extraPay;
+                  }
+                  return sum;
+                });
 
-                    return ListTile(
-                      title: Text(jobs[index].title),
-                      subtitle: Text('Hourly Rate: \$${jobs[index].hourlyRate}'),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Hours Worked This Month: ${totalHoursWorked.toStringAsFixed(2)}'),
-                          Text('Earnings: \$${totalEarnings.toStringAsFixed(2)}'),
-                        ],
+                return ListTile(
+                  title: Text(jobs[index].title),
+                  subtitle: Text('Hourly Rate: \$${jobs[index].hourlyRate}'),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Hours Worked This Month: ${totalHoursWorked.toStringAsFixed(2)}'),
+                      Text('Earnings: \$${totalEarnings.toStringAsFixed(2)}'),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddSessionScreen(job: jobs[index]),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddSessionScreen(job: jobs[index]),
-                          ),
-                        ).then((_) => loadJobs()); // Reload jobs after adding session
-                      },
-                    );
+                    ).then((_) => loadJobs()); // Reload jobs after adding session
                   },
-                )
-              : Center(child: Text('No jobs added yet. Please add a job to start tracking earnings.')),
+                );
+              },
+            )
+                : const Center(child: Text('No jobs added yet.', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white))),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddJobScreen(jobController: jobController),
+
+
+          // Bottom
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20), // Space between content and divider
+            child: Divider(thickness: 4, color: Colors.grey[300]),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0), // Align Total and button consistently
+            child: Column(
+              children: [
+                // Total Section styled like the button
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 25),
+                    decoration: BoxDecoration(
+                      color: Colors.white, // White background
+                      borderRadius: BorderRadius.circular(60), // Rounded corners like button
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Total: €',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30), // Spacing between "Total" and button
+                // Add New Job button
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddJobScreen(jobController: jobController),
+                        ),
+                      ).then((_) => loadJobs()); // Reload jobs after adding a job
+                    },
+                    icon: const Icon(Icons.add, color: Colors.black),
+                    label: const Text('Add new job', style: TextStyle(color: Colors.black)),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 25),
+                      backgroundColor: Colors.white, // White button background
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ).then((_) =>   loadJobs()); // Reload jobs after adding a job
-        },
-        child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 30.0), // Additional spacing below the button
+        ],
       ),
     );
   }
