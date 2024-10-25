@@ -61,6 +61,7 @@ class _MainScreenState extends State<MainScreen> {
                             builder: (context) => SessionScreen(
                               jobId: jobs[index].id!,
                               jobTitle: jobs[index].title,
+                              job: jobs[index],
                             ),
                           ),
                         );
@@ -114,8 +115,6 @@ class _MainScreenState extends State<MainScreen> {
                             fontWeight: FontWeight.bold,
                             color: Colors.white))),
           ),
-
-          // Bottom
           Padding(
             padding: const EdgeInsets.symmetric(
                 vertical: 20.0,
@@ -167,12 +166,11 @@ class _MainScreenState extends State<MainScreen> {
                       ).then(
                           (_) => loadJobs()); // Reload jobs after adding a job
                     },
-                    icon: const Icon(Icons.add, color: Colors.black),
                     label: const Text('Add new job',
                         style: TextStyle(color: Colors.black)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 120, vertical: 25),
+                          horizontal: 138, vertical: 25),
                       backgroundColor: Colors.white, // White button background
                       textStyle: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
