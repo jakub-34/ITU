@@ -99,11 +99,11 @@ class _MainScreenState extends State<MainScreen> {
               },
             )
                 : const Center(
-                    child: Text('No jobs added yet.',
-                        style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white))),
+                child: Text('No jobs added yet.',
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white))),
           ),
 
           // Bottom
@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
                 // Total Section styled like the button
                 ConstrainedBox(
                   constraints:
-                      const BoxConstraints(maxWidth: 375, maxHeight: 72),
+                  const BoxConstraints(maxWidth: 375, maxHeight: 72),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 120, vertical: 25),
@@ -146,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
                 // Add New Job button
                 ConstrainedBox(
                   constraints:
-                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                  const BoxConstraints(maxWidth: 500, maxHeight: 150),
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(
@@ -156,10 +156,10 @@ class _MainScreenState extends State<MainScreen> {
                               AddJobScreen(jobController: jobController),
                         ),
                       ).then(
-                          (_) => loadJobs()); // Reload jobs after adding a job
+                              (_) => loadJobs()); // Reload jobs after adding a job
                     },
                     icon: const Icon(Icons.add, color: Colors.black),
-                    label: const Text('Add new job',
+                    label: const Text('Add workday',
                         style: TextStyle(color: Colors.black)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
