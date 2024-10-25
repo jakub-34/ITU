@@ -21,8 +21,8 @@ class HiveService {
         they are only needed once after the fix remove them later 
         (or comment them out in case of a fuck up XD)
      */
-    await Hive.deleteBoxFromDisk(jobsBox); 
-    await Hive.deleteBoxFromDisk(sessionsBox);
+    // await Hive.deleteBoxFromDisk(jobsBox);
+    // await Hive.deleteBoxFromDisk(sessionsBox);
 
     await Hive.openBox<Job>(jobsBox);
     await Hive.openBox<WorkSession>(sessionsBox);

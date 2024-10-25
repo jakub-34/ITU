@@ -39,11 +39,6 @@ class _MainScreenState extends State<MainScreen> {
           if (jobs.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Total: \$${jobController.getMonthlyEarnings().toStringAsFixed(2)}€',
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
             ),
           ],
           Expanded(
@@ -53,23 +48,6 @@ class _MainScreenState extends State<MainScreen> {
                     itemBuilder: (context, index) {
                       List<WorkSession> sessions =
                           jobController.getSessionsForJob(jobs[index].id);
-                      double totalHoursWorked =
-                          sessions.fold(0.0, (sum, session) {
-                        if (session.date.month == DateTime.now().month &&
-                            session.date.year == DateTime.now().year) {
-                          return sum + session.hoursWorked;
-                        }
-                        return sum;
-                      });
-                      double totalEarnings = sessions.fold(0.0, (sum, session) {
-                        if (session.date.month == DateTime.now().month &&
-                            session.date.year == DateTime.now().year) {
-                          return sum +
-                              (session.hoursWorked * jobs[index].hourlyRate) +
-                              session.extraPay;
-                        }
-                        return sum;
-                      });
 
                       return ListTile(
                         title: Text(jobs[index].title),
@@ -79,9 +57,9 @@ class _MainScreenState extends State<MainScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                                'Hours Worked This Month: ${totalHoursWorked.toStringAsFixed(2)}'),
+                                'Hours Worked This Month: ${jobController.getMonthlyHoursForJob(jobs[index])}'),
                             Text(
-                                'Earnings: \$${totalEarnings.toStringAsFixed(2)}'),
+                                'Earnings: ${jobController.getMonthlyEarningsForJob(jobs[index])}€'),
                           ],
                         ),
                         onTap: () {
@@ -131,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        'Total: €',
+                        'Total: ${jobController.getMonthlyEarnings().toStringAsFixed(2)}€',
                         style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
