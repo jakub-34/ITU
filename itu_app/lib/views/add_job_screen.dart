@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
-import '../models/job.dart';
 
 class AddJobScreen extends StatefulWidget {
   final JobController jobController;
@@ -19,8 +18,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Job newJob = Job(title: _title, hourlyRate: _hourlyRate);
-      widget.jobController.addJob(newJob);
+      widget.jobController.addJob(_title, _hourlyRate);
       Navigator.pop(context);
     }
   }
@@ -37,14 +35,17 @@ class _AddJobScreenState extends State<AddJobScreen> {
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Job Title'),
-                validator: (value) => value!.isEmpty ? 'Please enter a title' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a title' : null,
                 onSaved: (value) => _title = value!,
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Hourly Rate'),
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty ? 'Please enter a rate' : null,
-                onSaved: (value) => _hourlyRate = double.tryParse(value!) ?? 0.0,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a rate' : null,
+                onSaved: (value) =>
+                    _hourlyRate = double.tryParse(value!) ?? 0.0,
               ),
               const SizedBox(height: 20),
               ElevatedButton(

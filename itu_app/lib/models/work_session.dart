@@ -2,10 +2,10 @@ import 'package:hive/hive.dart';
 
 part 'work_session.g.dart'; // Code generation for Hive
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 2)
 class WorkSession {
   @HiveField(0)
-  int? id;
+  int id;
 
   @HiveField(1)
   int jobId;
@@ -20,7 +20,7 @@ class WorkSession {
   double extraPay;
 
   WorkSession({
-    this.id,
+    required this.id,
     required this.jobId,
     required this.date,
     required this.hoursWorked,

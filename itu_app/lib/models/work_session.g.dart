@@ -8,7 +8,7 @@ part of 'work_session.dart';
 
 class WorkSessionAdapter extends TypeAdapter<WorkSession> {
   @override
-  final int typeId = 1;
+  final int typeId = 2;
 
   @override
   WorkSession read(BinaryReader reader) {
@@ -17,7 +17,7 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return WorkSession(
-      id: fields[0] as int?,
+      id: fields[0] as int,
       jobId: fields[1] as int,
       date: fields[2] as DateTime,
       hoursWorked: fields[3] as double,

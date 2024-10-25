@@ -8,7 +8,7 @@ part of 'job.dart';
 
 class JobAdapter extends TypeAdapter<Job> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
   Job read(BinaryReader reader) {
@@ -17,7 +17,7 @@ class JobAdapter extends TypeAdapter<Job> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Job(
-      id: fields[0] as int?,
+      id: fields[0] as int,
       title: fields[1] as String,
       hourlyRate: fields[2] as double,
     );

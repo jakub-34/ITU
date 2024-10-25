@@ -2,10 +2,10 @@ import 'package:hive/hive.dart';
 
 part 'job.g.dart'; // Code generation for Hive
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class Job {
   @HiveField(0)
-  int? id;
+  int id;
 
   @HiveField(1)
   String title;
@@ -13,5 +13,5 @@ class Job {
   @HiveField(2)
   double hourlyRate;
 
-  Job({this.id, required this.title, required this.hourlyRate});
+  Job({required this.id, required this.title, required this.hourlyRate});
 }

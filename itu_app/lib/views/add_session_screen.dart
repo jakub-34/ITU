@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../controllers/session_controller.dart';
-import '../models/work_session.dart';
 import '../models/job.dart';
 import '../services/hive_service.dart';
+
 class AddSessionScreen extends StatefulWidget {
   final Job job;
 
@@ -21,12 +21,8 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final sessionController = SessionController(HiveService());
-      sessionController.addWorkSession(WorkSession(
-        jobId: widget.job.id!,
-        date: DateTime.now(),
-        hoursWorked: _hoursWorked,
-        extraPay: _extraPay,
-      ));
+      sessionController.addWorkSession(
+          widget.job.id, DateTime.now(), _hoursWorked, _extraPay);
       Navigator.pop(context);
     }
   }
@@ -44,13 +40,16 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Hours Worked'),
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty ? 'Please enter hours worked' : null,
-                onSaved: (value) => _hoursWorked = double.tryParse(value!) ?? 0.0,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter hours worked' : null,
+                onSaved: (value) =>
+                    _hoursWorked = double.tryParse(value!) ?? 0.0,
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Extra Pay'),
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty ? 'Please enter extra pay' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter extra pay' : null,
                 onSaved: (value) => _extraPay = double.tryParse(value!) ?? 0.0,
               ),
               const SizedBox(height: 20),
