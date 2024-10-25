@@ -3,6 +3,7 @@ import '../controllers/job_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
 import '../services/hive_service.dart';
+import 'session_screen.dart';
 import 'add_job_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -52,32 +53,40 @@ class _MainScreenState extends State<MainScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      decoration: BoxDecoration(
-                        color: Colors.white, // White background
-                        borderRadius: BorderRadius.circular(60), // Rounded corners
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: Offset(0, 2), // Subtle shadow for depth
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SessionScreen(
+                              jobId: jobs[index].id!,
+                              jobTitle: jobs[index].title,
+                            ),
                           ),
-                        ],
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        backgroundColor: Colors.white, // White background
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(60), // Rounded corners
+                        ),
+                        shadowColor: Colors.black.withOpacity(0.1), // Shadow for depth
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.center, // Center the text vertically
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 jobs[index].title,
                                 style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
                             ],
                           ),
@@ -87,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                               Text(
                                 '${jobController.getMonthlyHoursForJob(jobs[index]).toStringAsFixed(1)}h / ${jobController.getMonthlyEarningsForJob(jobs[index]).toStringAsFixed(2)}€',
-                                style: const TextStyle(color: Colors.black, fontSize: 18),
+                                style: const TextStyle(color: Colors.black),
                               ),
                             ],
                           ),
