@@ -42,12 +42,57 @@ class _SessionScreenState extends State<SessionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.jobTitle),
-      ),
       backgroundColor: const Color(0xFF121212),
       body: Column(
         children: [
+          // Custom Header with Job Title Bubble and Delete Button
+          Padding(
+      padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Job Title Bubble
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    widget.jobTitle,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                // Delete Button
+                ElevatedButton(
+                  onPressed: () {
+                    // Define your delete functionality here
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           Expanded(
             child: sessions.isNotEmpty
                 ? ListView.builder(
@@ -55,50 +100,49 @@ class _SessionScreenState extends State<SessionScreen> {
               itemBuilder: (context, index) {
                 WorkSession session = sessions[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${session.date.day}.${session.date.month}.${session.date.year}',
-                              style: const TextStyle(
-                                  fontSize: 16,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.white, // White background
+                        borderRadius: BorderRadius.circular(60), // Rounded corners
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2), // Subtle shadow for depth
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${session.date.day}.${session.date.month}.${session.date.year}',
+                                style: const TextStyle(
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                            ),
-                            Text(
-                              '${session.date.hour}:${session.date.minute} - ${session.hoursWorked.toStringAsFixed(2)}h',
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          '+ ${session.extraPay.toStringAsFixed(2)}€',
-                          style: const TextStyle(
-                              fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            'od - do',
+                            style: const TextStyle(
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                      ],
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
