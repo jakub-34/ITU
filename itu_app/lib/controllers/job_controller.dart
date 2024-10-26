@@ -7,8 +7,13 @@ class JobController {
 
   JobController(this.hiveService);
 
-  Future<void> addJob(String title, double hourlyRate) async {
-    var newJob = _createNewJob(title, hourlyRate);
+  Future<void> addJob(String title, double weekDayRate,
+      [double saturdayRate = 0.0,
+      double sundayRate = 0.0,
+      double breakHours = 0.0,
+      double hoursTillBreak = 0.0]) async {
+    var newJob = _createNewJob(title, weekDayRate, saturdayRate, sundayRate,
+        breakHours, hoursTillBreak);
     await hiveService.addJob(newJob);
   }
 
@@ -36,8 +41,23 @@ class JobController {
     return hiveService.calculateMonthlyHoursForJob(job);
   }
 
-  Job _createNewJob(String title, double hourlyRate) {
+  void deleteJob(int jobId) {
+    hiveService.deleteJob(jobId);
+  }
+
+  Job _createNewJob(String title, double weekDayRate,
+      [double saturdayRate = 0.0,
+      double sundayRate = 0.0,
+      double breakHours = 0.0,
+      double hoursTillBreak = 0.0]) {
     var id = hiveService.getNewJobId();
-    return Job(id: id, title: title, hourlyRate: hourlyRate);
+    return Job(
+        id: id,
+        title: title,
+        weekDayRate: weekDayRate,
+        saturdayRate: saturdayRate,
+        sundayRate: sundayRate,
+        breakHours: breakHours,
+        hoursTillBreak: hoursTillBreak);
   }
 }

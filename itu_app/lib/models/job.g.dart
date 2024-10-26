@@ -19,20 +19,32 @@ class JobAdapter extends TypeAdapter<Job> {
     return Job(
       id: fields[0] as int,
       title: fields[1] as String,
-      hourlyRate: fields[2] as double,
+      weekDayRate: fields[2] as double,
+      saturdayRate: fields[4] as double,
+      sundayRate: fields[3] as double,
+      breakHours: fields[5] as double,
+      hoursTillBreak: fields[6] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, Job obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.hourlyRate);
+      ..write(obj.weekDayRate)
+      ..writeByte(3)
+      ..write(obj.sundayRate)
+      ..writeByte(4)
+      ..write(obj.saturdayRate)
+      ..writeByte(5)
+      ..write(obj.breakHours)
+      ..writeByte(6)
+      ..write(obj.hoursTillBreak);
   }
 
   @override

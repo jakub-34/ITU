@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
 import '../models/job.dart';
-import '../models/work_session.dart';
 import '../services/hive_service.dart';
 import 'session_screen.dart';
 import 'add_job_screen.dart';
@@ -37,77 +36,80 @@ class _MainScreenState extends State<MainScreen> {
       body: Column(
         children: [
           if (jobs.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
             ),
           ],
           Expanded(
             child: jobs.isNotEmpty
                 ? ListView.builder(
-              itemCount: jobs.length,
-              itemBuilder: (context, index) {
-                List<WorkSession> sessions =
-                jobController.getSessionsForJob(jobs[index].id);
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SessionScreen(
-                              jobId: jobs[index].id!,
-                              jobTitle: jobs[index].title,
-                              job: jobs[index],
+                    itemCount: jobs.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                              maxWidth: 375, maxHeight: 72),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SessionScreen(
+                                    jobId: jobs[index].id,
+                                    jobTitle: jobs[index].title,
+                                    job: jobs[index],
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 15),
+                              backgroundColor: Colors.white, // White background
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    60), // Rounded corners
+                              ),
+                              shadowColor: Colors.black
+                                  .withOpacity(0.1), // Shadow for depth
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      jobs[index].title,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '${jobController.getMonthlyHoursForJob(jobs[index]).toStringAsFixed(1)}h / ${jobController.getMonthlyEarningsForJob(jobs[index]).toStringAsFixed(2)}€',
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        backgroundColor: Colors.white, // White background
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(60), // Rounded corners
                         ),
-                        shadowColor: Colors.black.withOpacity(0.1), // Shadow for depth
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                jobs[index].title,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${jobController.getMonthlyHoursForJob(jobs[index]).toStringAsFixed(1)}h / ${jobController.getMonthlyEarningsForJob(jobs[index]).toStringAsFixed(2)}€',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            )
+                      );
+                    },
+                  )
                 : const Center(
                     child: Text('No jobs added yet.',
                         style: TextStyle(

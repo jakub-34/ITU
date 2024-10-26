@@ -5,6 +5,7 @@ import '../models/work_session.dart';
 class HiveService {
   static const String jobsBox = 'jobsBox';
   static const String sessionsBox = 'sessionsBox';
+  static const String templatesBox = 'templatesBox';
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -26,6 +27,7 @@ class HiveService {
 
     await Hive.openBox<Job>(jobsBox);
     await Hive.openBox<WorkSession>(sessionsBox);
+    await Hive.openBox<WorkSession>(templatesBox);
   }
 
   Future<void> addJob(Job job) async {
@@ -36,6 +38,74 @@ class HiveService {
   Future<void> addWorkSession(WorkSession session) async {
     var box = Hive.box<WorkSession>(sessionsBox);
     await box.add(session);
+  }
+
+  Future<void> addTemplate(WorkSession template) async {
+    var box = Hive.box<WorkSession>(templatesBox);
+    await box.add(template);
+  }
+
+  Future<void> deleteJob(int jobId) async {
+    var jobBox = Hive.box<Job>(jobsBox);
+    var sesionBox = Hive.box<WorkSession>(sessionsBox);
+    var templateBox = Hive.box<WorkSession>(templatesBox);
+    for (var key in jobBox.keys) {
+      Job? job = jobBox.get(key);
+      if (job!.id == jobId) {
+        await jobBox.delete(key);
+      }
+    }
+    await sesionBox.deleteAll(getSessionKeys(jobId));
+    await templateBox.deleteAll(getTemplateKeys(jobId));
+  }
+
+  List<dynamic> getSessionKeys(int jobId) {
+    var box = Hive.box<WorkSession>(sessionsBox);
+    var sessionKeys = [];
+
+    for (var key in box.keys) {
+      WorkSession? session = box.get(key);
+      if (session!.jobId == jobId) {
+        sessionKeys.add(key);
+      }
+    }
+    return sessionKeys;
+  }
+
+  List<dynamic> getTemplateKeys(int jobId) {
+    var box = Hive.box<WorkSession>(sessionsBox);
+    var sessionKeys = [];
+
+    for (var key in box.keys) {
+      WorkSession? session = box.get(key);
+      if (session!.jobId == jobId) {
+        sessionKeys.add(key);
+      }
+    }
+    return sessionKeys;
+  }
+
+  Future<void> deleteSession(WorkSession session) async {
+    var box = Hive.box<WorkSession>(sessionsBox);
+
+    for (var key in box.keys) {
+      WorkSession? boxSession = box.get(key);
+      if (boxSession!.date == session.date &&
+          boxSession.jobId == session.jobId) {
+        await box.delete(key);
+      }
+    }
+  }
+
+  Future<void> deleteTemplate(int jobId, int templateId) async {
+    var box = Hive.box<WorkSession>(templatesBox);
+
+    for (var key in box.keys) {
+      WorkSession? boxTemplate = box.get(key);
+      if (boxTemplate!.templateId == templateId && boxTemplate.jobId == jobId) {
+        await box.delete(key);
+      }
+    }
   }
 
   List<Job> getAllJobs() {
@@ -55,7 +125,7 @@ class HiveService {
       totalEarnings += getSessionsForJob(job.id).fold(0.0, (sum, session) {
         if (session.date.month == now.month && session.date.year == now.year) {
           return sum +
-              (session.hoursWorked * job.hourlyRate + session.extraPay);
+              session.getHoursWorked() * job.getRateForSession(session);
         }
         return sum;
       });
@@ -70,7 +140,7 @@ class HiveService {
     for (var job in getAllJobs()) {
       totalHoursWorked += getSessionsForJob(job.id).fold(0.0, (sum, session) {
         if (session.date.month == now.month && session.date.year == now.year) {
-          return sum + session.hoursWorked;
+          return sum + session.getHoursWorked();
         }
         return sum;
       });
@@ -83,7 +153,7 @@ class HiveService {
     double totalEarnings = sessions.fold(0.0, (sum, session) {
       if (session.date.month == DateTime.now().month &&
           session.date.year == DateTime.now().year) {
-        return sum + session.hoursWorked * job.hourlyRate + session.extraPay;
+        return sum + session.getHoursWorked() * job.getRateForSession(session);
       }
       return sum;
     });
@@ -95,7 +165,7 @@ class HiveService {
     double totalHoursWorked = sessions.fold(0.0, (sum, session) {
       if (session.date.month == DateTime.now().month &&
           session.date.year == DateTime.now().year) {
-        return sum + session.hoursWorked;
+        return sum + session.getHoursWorked();
       }
       return sum;
     });
@@ -110,14 +180,21 @@ class HiveService {
     return jobs.map((job) => job.id).reduce((a, b) => a > b ? a : b) + 1;
   }
 
-  int getNewSessionId() {
+  int getNewTemplateId() {
     var sessions = Hive.box<WorkSession>(sessionsBox).values.toList();
     if (sessions.isEmpty) {
       return 1;
     }
     return sessions
-            .map((session) => session.id)
+            .map((session) => session.templateId)
             .reduce((a, b) => a > b ? a : b) +
         1;
+  }
+
+  List<WorkSession> getSessionTemplatesForJob(int jobId) {
+    var box = Hive.box<WorkSession>(templatesBox);
+    return box.values
+        .where((session) => session.jobId == jobId && session.templateId != 0)
+        .toList();
   }
 }

@@ -5,7 +5,7 @@ part 'work_session.g.dart'; // Code generation for Hive
 @HiveType(typeId: 2)
 class WorkSession {
   @HiveField(0)
-  int id;
+  int templateId;
 
   @HiveField(1)
   int jobId;
@@ -14,16 +14,20 @@ class WorkSession {
   DateTime date;
 
   @HiveField(3)
-  double hoursWorked;
+  double startTime;
 
   @HiveField(4)
-  double extraPay;
+  double endTime;
 
   WorkSession({
-    required this.id,
+    this.templateId = 0,
     required this.jobId,
     required this.date,
-    required this.hoursWorked,
-    this.extraPay = 0.0,
+    required this.startTime,
+    required this.endTime,
   });
+
+  double getHoursWorked() {
+    return endTime - startTime;
+  }
 }

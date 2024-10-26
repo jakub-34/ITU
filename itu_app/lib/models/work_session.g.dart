@@ -17,11 +17,11 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return WorkSession(
-      id: fields[0] as int,
+      templateId: fields[0] as int,
       jobId: fields[1] as int,
       date: fields[2] as DateTime,
-      hoursWorked: fields[3] as double,
-      extraPay: fields[4] as double,
+      startTime: fields[3] as double,
+      endTime: fields[4] as double,
     );
   }
 
@@ -30,15 +30,15 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
     writer
       ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.templateId)
       ..writeByte(1)
       ..write(obj.jobId)
       ..writeByte(2)
       ..write(obj.date)
       ..writeByte(3)
-      ..write(obj.hoursWorked)
+      ..write(obj.startTime)
       ..writeByte(4)
-      ..write(obj.extraPay);
+      ..write(obj.endTime);
   }
 
   @override

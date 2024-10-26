@@ -1,5 +1,6 @@
 // session_screen.dart
 import 'package:flutter/material.dart';
+import 'package:itu_app/controllers/job_controller.dart';
 import '../controllers/session_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
@@ -24,12 +25,14 @@ class SessionScreen extends StatefulWidget {
 
 class _SessionScreenState extends State<SessionScreen> {
   late SessionController sessionController;
+  late JobController jobController;
   List<WorkSession> sessions = [];
 
   @override
   void initState() {
     super.initState();
     sessionController = SessionController(HiveService());
+    jobController = JobController(HiveService());
     loadSessions();
   }
 
@@ -47,13 +50,14 @@ class _SessionScreenState extends State<SessionScreen> {
         children: [
           // Custom Header with Job Title Bubble and Delete Button
           Padding(
-      padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+            padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Job Title Bubble
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
@@ -78,15 +82,19 @@ class _SessionScreenState extends State<SessionScreen> {
                 ElevatedButton(
                   onPressed: () {
                     // Define your delete functionality here
+                    jobController.deleteJob(widget.jobId);
                   },
                   style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                   child: const Text(
                     'Delete',
-                    style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -96,65 +104,72 @@ class _SessionScreenState extends State<SessionScreen> {
           Expanded(
             child: sessions.isNotEmpty
                 ? ListView.builder(
-              itemCount: sessions.length,
-              itemBuilder: (context, index) {
-                WorkSession session = sessions[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      decoration: BoxDecoration(
-                        color: Colors.white, // White background
-                        borderRadius: BorderRadius.circular(60), // Rounded corners
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2), // Subtle shadow for depth
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${session.date.day}.${session.date.month}.${session.date.year}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                    itemCount: sessions.length,
+                    itemBuilder: (context, index) {
+                      WorkSession session = sessions[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                              maxWidth: 375, maxHeight: 72),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 15),
+                            decoration: BoxDecoration(
+                              color: Colors.white, // White background
+                              borderRadius:
+                                  BorderRadius.circular(60), // Rounded corners
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(
+                                      0, 2), // Subtle shadow for depth
                                 ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            'od - do',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '${session.date.day}.${session.date.month}.${session.date.year}',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Text(
+                                  'od - do',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      );
+                    },
+                  )
+                : const Center(
+                    child: Text(
+                      'No sessions added yet.',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
-                );
-              },
-            )
-                : const Center(
-              child: Text(
-                'No sessions added yet.',
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -170,7 +185,7 @@ class _SessionScreenState extends State<SessionScreen> {
                 // Add New Job button
                 ConstrainedBox(
                   constraints:
-                  const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(
@@ -179,8 +194,8 @@ class _SessionScreenState extends State<SessionScreen> {
                           builder: (context) =>
                               AddSessionScreen(job: widget.job),
                         ),
-                      ).then(
-                              (_) => loadSessions()); // Reload jobs after adding a job
+                      ).then((_) =>
+                          loadSessions()); // Reload jobs after adding a job
                     },
                     label: const Text('Add workday',
                         style: TextStyle(color: Colors.black)),

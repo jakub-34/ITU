@@ -21,8 +21,6 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final sessionController = SessionController(HiveService());
-      sessionController.addWorkSession(
-          widget.job.id, DateTime.now(), _hoursWorked, _extraPay);
       Navigator.pop(context);
     }
   }

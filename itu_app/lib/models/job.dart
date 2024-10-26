@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:itu_app/models/work_session.dart';
 
 part 'job.g.dart'; // Code generation for Hive
 
@@ -11,7 +12,37 @@ class Job {
   String title;
 
   @HiveField(2)
-  double hourlyRate;
+  double weekDayRate;
 
-  Job({required this.id, required this.title, required this.hourlyRate});
+  @HiveField(3)
+  double sundayRate;
+
+  @HiveField(4)
+  double saturdayRate;
+
+  @HiveField(5)
+  double breakHours;
+
+  @HiveField(6)
+  double hoursTillBreak;
+
+  Job(
+      {required this.id,
+      required this.title,
+      required this.weekDayRate,
+      this.saturdayRate = 0.0,
+      this.sundayRate = 0.0,
+      this.breakHours = 0.0,
+      this.hoursTillBreak = 0.0});
+
+  double getRateForSession(WorkSession session) {
+    var sessionDate = session.date;
+    var rate = weekDayRate;
+    if (sessionDate.day == DateTime.saturday && saturdayRate != 0.0) {
+      rate = saturdayRate;
+    } else if (sessionDate.day == DateTime.sunday && sundayRate != 0.0) {
+      rate = sundayRate;
+    }
+    return rate;
+  }
 }
