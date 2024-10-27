@@ -19,12 +19,16 @@ class WorkSession {
   @HiveField(4)
   double endTime;
 
+  @HiveField(5)
+  String? name;
+
   WorkSession({
     this.templateId = 0,
     required this.jobId,
     required this.date,
     required this.startTime,
     required this.endTime,
+    this.name,
   });
 
   double getHoursWorked() {

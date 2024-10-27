@@ -22,13 +22,14 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
       date: fields[2] as DateTime,
       startTime: fields[3] as double,
       endTime: fields[4] as double,
+      name: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, WorkSession obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.templateId)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
       ..writeByte(3)
       ..write(obj.startTime)
       ..writeByte(4)
-      ..write(obj.endTime);
+      ..write(obj.endTime)
+      ..writeByte(5)
+      ..write(obj.name);
   }
 
   @override

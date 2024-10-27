@@ -1,10 +1,12 @@
 // session_screen.dart
 import 'package:flutter/material.dart';
-import 'package:itu_app/controllers/job_controller.dart';
+import '../controllers/job_controller.dart';
+import '../controllers/template_controller.dart';
 import '../controllers/session_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
 import '../services/hive_service.dart';
+import '../views/main_screen.dart';
 import 'add_session_screen.dart';
 
 class SessionScreen extends StatefulWidget {
@@ -26,20 +28,51 @@ class SessionScreen extends StatefulWidget {
 class _SessionScreenState extends State<SessionScreen> {
   late SessionController sessionController;
   late JobController jobController;
+  late TemplateController templateController;
   List<WorkSession> sessions = [];
+  List<WorkSession> templates = [];
 
   @override
   void initState() {
     super.initState();
     sessionController = SessionController(HiveService());
     jobController = JobController(HiveService());
+    templateController = TemplateController(HiveService());
     loadSessions();
   }
 
   void loadSessions() {
     setState(() {
       sessions = sessionController.getSessionsForJob(widget.jobId);
+      templates = templateController.getTemplatesForJob(widget.jobId);
     });
+  }
+
+  Future<void> _deleteConfirmDialog() async {
+    return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm delete'),
+            content: const Text('Are you sure you want to delete this job?'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel')),
+              ElevatedButton(
+                  onPressed: () => {
+                        jobController.deleteJob(widget.jobId),
+                        Navigator.pop(context),
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainScreen()))
+                      },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('delete'))
+            ],
+          );
+        });
   }
 
   @override
@@ -55,19 +88,19 @@ class _SessionScreenState extends State<SessionScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Job Title Bubble
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    shadowColor: Colors.black.withOpacity(0.1),
+                    elevation: 4, // This creates the shadow effect
                   ),
                   child: Text(
                     widget.jobTitle,
@@ -81,8 +114,7 @@ class _SessionScreenState extends State<SessionScreen> {
                 // Delete Button
                 ElevatedButton(
                   onPressed: () {
-                    // Define your delete functionality here
-                    jobController.deleteJob(widget.jobId);
+                    _deleteConfirmDialog();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -207,7 +239,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           ),
