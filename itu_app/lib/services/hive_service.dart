@@ -24,6 +24,7 @@ class HiveService {
      */
     // await Hive.deleteBoxFromDisk(jobsBox);
     // await Hive.deleteBoxFromDisk(sessionsBox);
+    // await Hive.deleteBoxFromDisk(templatesBox);
 
     await Hive.openBox<Job>(jobsBox);
     await Hive.openBox<WorkSession>(sessionsBox);
@@ -73,7 +74,7 @@ class HiveService {
   }
 
   List<dynamic> getTemplateKeys(int jobId) {
-    var box = Hive.box<WorkSession>(sessionsBox);
+    var box = Hive.box<WorkSession>(templatesBox);
     var sessionKeys = [];
 
     for (var key in box.keys) {
@@ -181,20 +182,18 @@ class HiveService {
   }
 
   int getNewTemplateId() {
-    var sessions = Hive.box<WorkSession>(sessionsBox).values.toList();
-    if (sessions.isEmpty) {
-      return 1;
+    var templates = Hive.box<WorkSession>(templatesBox).values.toList();
+    if (templates.isEmpty) {
+      return 0;
     }
-    return sessions
-            .map((session) => session.templateId)
+    return templates
+            .map((template) => template.templateId)
             .reduce((a, b) => a > b ? a : b) +
         1;
   }
 
   List<WorkSession> getSessionTemplatesForJob(int jobId) {
     var box = Hive.box<WorkSession>(templatesBox);
-    return box.values
-        .where((session) => session.jobId == jobId && session.templateId != 0)
-        .toList();
+    return box.values.where((template) => template.jobId == jobId).toList();
   }
 }

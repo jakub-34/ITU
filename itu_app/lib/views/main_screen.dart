@@ -62,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
                                     job: jobs[index],
                                   ),
                                 ),
-                              );
+                              ).then((_) => loadJobs());
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(

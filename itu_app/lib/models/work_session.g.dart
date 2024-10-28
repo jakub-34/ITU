@@ -20,8 +20,8 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
       templateId: fields[0] as int,
       jobId: fields[1] as int,
       date: fields[2] as DateTime,
-      startTime: fields[3] as double,
-      endTime: fields[4] as double,
+      startTime: fields[3] as DateTime,
+      endTime: fields[4] as DateTime,
       name: fields[5] as String?,
     );
   }

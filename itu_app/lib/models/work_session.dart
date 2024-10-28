@@ -14,10 +14,10 @@ class WorkSession {
   DateTime date;
 
   @HiveField(3)
-  double startTime;
+  DateTime startTime;
 
   @HiveField(4)
-  double endTime;
+  DateTime endTime;
 
   @HiveField(5)
   String? name;
@@ -32,6 +32,6 @@ class WorkSession {
   });
 
   double getHoursWorked() {
-    return endTime - startTime;
+    return endTime.difference(startTime).inMinutes / 60.0;
   }
 }

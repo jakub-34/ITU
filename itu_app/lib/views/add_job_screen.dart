@@ -46,7 +46,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   fillColor: Colors.white,
                   labelText: 'Job name',
                   constraints:
-                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                      const BoxConstraints(maxWidth: 375, maxHeight: 80),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(60)),
                 ),
@@ -60,7 +60,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   fillColor: Colors.white,
                   labelText: 'Pay in week',
                   constraints:
-                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                      const BoxConstraints(maxWidth: 375, maxHeight: 80),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(60)),
                 ),
@@ -80,7 +80,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       labelText: 'Saturday Pay',
                       hintText: '0',
                       constraints:
-                          const BoxConstraints(maxWidth: 230, maxHeight: 150),
+                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60)),
                     ),
@@ -89,7 +89,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     onSaved: (value) =>
                         _sundayRate = double.tryParse(value!) ?? 0.0,
                   ),
-                  const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
+                  const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
                   TextFormField(
                     decoration: InputDecoration(
                       filled: true,
@@ -97,7 +97,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       labelText: 'Sunday pay',
                       hintText: '0',
                       constraints:
-                          const BoxConstraints(maxWidth: 230, maxHeight: 150),
+                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60)),
                     ),
@@ -118,7 +118,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       labelText: 'Break time',
                       hintText: '0',
                       constraints:
-                          const BoxConstraints(maxWidth: 230, maxHeight: 150),
+                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60)),
                     ),
@@ -135,7 +135,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       labelText: 'Hours till break',
                       hintText: '0',
                       constraints:
-                          const BoxConstraints(maxWidth: 230, maxHeight: 150),
+                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60)),
                     ),
@@ -148,10 +148,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0), // Align Total and button consistently
+                    horizontal: 15.0), // Align Total and button consistently
                 child: ConstrainedBox(
                   constraints:
-                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                      const BoxConstraints(maxWidth: 375, maxHeight: 80),
                   child: ElevatedButton.icon(
                     onPressed: () {
                       _submit();

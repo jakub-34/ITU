@@ -6,7 +6,6 @@ import '../controllers/session_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
 import '../services/hive_service.dart';
-import '../views/main_screen.dart';
 import 'add_session_screen.dart';
 
 class SessionScreen extends StatefulWidget {
@@ -63,10 +62,7 @@ class _SessionScreenState extends State<SessionScreen> {
                   onPressed: () => {
                         jobController.deleteJob(widget.jobId),
                         Navigator.pop(context),
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainScreen()))
+                        Navigator.pop(context)
                       },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('delete'))
@@ -134,6 +130,7 @@ class _SessionScreenState extends State<SessionScreen> {
           ),
 
           Expanded(
+            flex: 2,
             child: sessions.isNotEmpty
                 ? ListView.builder(
                     itemCount: sessions.length,
@@ -209,40 +206,72 @@ class _SessionScreenState extends State<SessionScreen> {
                 horizontal: 20), // Space between content and divider
             child: Divider(thickness: 4, color: Colors.grey[300]),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
+          const Padding(
+            padding: EdgeInsets.symmetric(
                 horizontal: 20.0), // Align Total and button consistently
-            child: Column(
-              children: [
-                // Add New Job button
-                ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AddSessionScreen(job: widget.job),
+          ),
+          Expanded(
+            flex: 1,
+            child: templates.isNotEmpty
+                ? ListView.builder(
+                    itemCount: templates.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            sessionController.addWorkSession(
+                                widget.jobId, index);
+                            loadSessions();
+                          },
+                          label: Text('${templates[index].name}',
+                              style: const TextStyle(color: Colors.black)),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 138, vertical: 25),
+                            backgroundColor:
+                                Colors.white, // White button background
+                            textStyle: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ).then((_) =>
-                          loadSessions()); // Reload jobs after adding a job
+                      );
                     },
-                    label: const Text('Add workday',
-                        style: TextStyle(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 138, vertical: 25),
-                      backgroundColor: Colors.white, // White button background
-                      textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                  )
+                : const Center(
+                    child: Text(
+                      'No shfit types added yet!',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
-                )
-              ],
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 150),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddSessionScreen(job: widget.job),
+                  ),
+                ).then((_) => loadSessions());
+              },
+              label: const Text('Add workday',
+                  style: TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
+                backgroundColor: Colors.white, // White button background
+                textStyle:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
+          // Add New Job button
           const SizedBox(height: 30.0), // Additional spacing below the button
         ],
       ),

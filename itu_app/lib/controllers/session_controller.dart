@@ -6,8 +6,8 @@ class SessionController {
 
   SessionController(this.hiveService);
 
-  Future<void> addWorkSession(int jobId, DateTime date, int templateId) async {
-    WorkSession session = _createNewSession(jobId, date, templateId);
+  Future<void> addWorkSession(int jobId, int templateId) async {
+    WorkSession session = _createNewSession(jobId, templateId);
     await hiveService.addWorkSession(session);
   }
 
@@ -15,11 +15,11 @@ class SessionController {
     return hiveService.getSessionsForJob(jobId);
   }
 
-  WorkSession _createNewSession(int jobId, DateTime date, int templateId) {
+  WorkSession _createNewSession(int jobId, int templateId) {
     var template = hiveService.getSessionTemplatesForJob(jobId)[templateId];
     return WorkSession(
         jobId: jobId,
-        date: date,
+        date: DateTime.now(),
         startTime: template.startTime,
         endTime: template.endTime);
   }
