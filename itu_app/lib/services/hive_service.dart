@@ -126,7 +126,8 @@ class HiveService {
       totalEarnings += getSessionsForJob(job.id).fold(0.0, (sum, session) {
         if (session.date.month == now.month && session.date.year == now.year) {
           return sum +
-              session.getHoursWorked() * job.getRateForSession(session);
+              job.getWorkHoursForSession(session) *
+                  job.getRateForSession(session);
         }
         return sum;
       });
@@ -154,7 +155,9 @@ class HiveService {
     double totalEarnings = sessions.fold(0.0, (sum, session) {
       if (session.date.month == DateTime.now().month &&
           session.date.year == DateTime.now().year) {
-        return sum + session.getHoursWorked() * job.getRateForSession(session);
+        return sum +
+            job.getWorkHoursForSession(session) *
+                job.getRateForSession(session);
       }
       return sum;
     });

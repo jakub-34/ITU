@@ -73,77 +73,23 @@ class _AddJobScreenState extends State<AddJobScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelText: 'Saturday Pay',
-                      hintText: '0',
-                      constraints:
-                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60)),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) => null,
-                    onSaved: (value) =>
-                        _sundayRate = double.tryParse(value!) ?? 0.0,
-                  ),
+                  _buildOptNumberInput('Saturday Pay',
+                      (value) => _saturdayRate = double.tryParse(value) ?? 0.0),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelText: 'Sunday pay',
-                      hintText: '0',
-                      constraints:
-                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60)),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) => null,
-                    onSaved: (value) =>
-                        _saturdayRate = double.tryParse(value!) ?? 0.0,
-                  ),
+                  _buildOptNumberInput('Sunday Pay',
+                      (value) => _sundayRate = double.tryParse(value) ?? 0.0),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelText: 'Break time',
-                      hintText: '0',
-                      constraints:
-                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60)),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) => null,
-                    onSaved: (value) =>
-                        _breakHours = double.tryParse(value!) ?? 0.0,
-                  ),
+                  _buildOptNumberInput('Break Time',
+                      (value) => _breakHours = double.tryParse(value) ?? 0.0),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelText: 'Hours till break',
-                      hintText: '0',
-                      constraints:
-                          const BoxConstraints(maxWidth: 180, maxHeight: 80),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60)),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) => null,
-                    onSaved: (value) =>
-                        _hoursTillBreak = double.tryParse(value!) ?? 0.0,
-                  ),
+                  _buildOptNumberInput(
+                      'Hours till break',
+                      (value) =>
+                          _hoursTillBreak = double.tryParse(value) ?? 0.0),
                 ],
               ),
               Padding(
@@ -172,6 +118,21 @@ class _AddJobScreenState extends State<AddJobScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  TextFormField _buildOptNumberInput(String labelText, func) {
+    return TextFormField(
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        labelText: labelText,
+        hintText: '0',
+        constraints: const BoxConstraints(maxWidth: 180, maxHeight: 80),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(60)),
+      ),
+      keyboardType: TextInputType.number,
+      onSaved: func,
     );
   }
 }

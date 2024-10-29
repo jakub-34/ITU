@@ -45,4 +45,16 @@ class Job {
     }
     return rate;
   }
+
+  double getWorkHoursForSession(WorkSession session) {
+    var basicHoursWorked = session.getHoursWorked();
+    if (hoursTillBreak == 0.0) {
+      return basicHoursWorked;
+    }
+
+    var totalHoursWorked = basicHoursWorked -
+        (basicHoursWorked / hoursTillBreak).floor() * breakHours;
+    print(totalHoursWorked);
+    return totalHoursWorked;
+  }
 }
