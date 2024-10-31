@@ -213,65 +213,126 @@ class _SessionScreenState extends State<SessionScreen> {
           ),
           Expanded(
             flex: 1,
-            child: templates.isNotEmpty
-                ? ListView.builder(
-                    itemCount: templates.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ConstrainedBox(
-                        constraints:
-                            const BoxConstraints(maxWidth: 500, maxHeight: 150),
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            sessionController.addWorkSession(
-                                widget.jobId, index);
-                            loadSessions();
-                          },
-                          label: Text('${templates[index].name}',
-                              style: const TextStyle(color: Colors.black)),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 138, vertical: 25),
-                            backgroundColor:
-                                Colors.white, // White button background
-                            textStyle: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
+            child: ListView.builder(
+              itemCount: templates.length + 1, // Always include the "Add workday" button as the last item
+              itemBuilder: (BuildContext context, int index) {
+                if (index == templates.length) {
+                  // Add workday button at the bottom of the templates list
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddSessionScreen(job: widget.job),
+                            ),
+                          ).then((_) => loadSessions());
+                        },
+                        label: const Text('Add template', style: TextStyle(color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
+                          backgroundColor: Colors.white, // White button background
+                          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                      );
-                    },
-                  )
-                : const Center(
-                    child: Text(
-                      'No shfit types added yet!',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                      ),
+                    ),
+                  );
+                }
+
+                // Template item
+                WorkSession template = templates[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.white, // White background
+                        borderRadius: BorderRadius.circular(60), // Rounded corners
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2), // Subtle shadow for depth
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${template.name}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  sessionController.addWorkSession(widget.jobId, index);
+                                  loadSessions(); // Reload sessions after adding from template
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0x91D4FFFF),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(60),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Set date',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10), // Fixed spacing between buttons
+                              ElevatedButton(
+                                onPressed: () {
+                                  // TODO
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0x91D4FFFF),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(60),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Add Shift',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-          ),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 150),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddSessionScreen(job: widget.job),
-                  ),
-                ).then((_) => loadSessions());
+                );
               },
-              label: const Text('Add workday',
-                  style: TextStyle(color: Colors.black)),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
-                backgroundColor: Colors.white, // White button background
-                textStyle:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
             ),
           ),
+
+
+
           // Add New Job button
           const SizedBox(height: 30.0), // Additional spacing below the button
         ],
