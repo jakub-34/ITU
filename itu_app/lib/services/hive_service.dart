@@ -22,9 +22,9 @@ class HiveService {
         they are only needed once after the fix remove them later 
         (or comment them out in case of a fuck up XD)
      */
-    // await Hive.deleteBoxFromDisk(jobsBox);
     // await Hive.deleteBoxFromDisk(sessionsBox);
     // await Hive.deleteBoxFromDisk(templatesBox);
+    // await Hive.deleteBoxFromDisk(jobsBox);
 
     await Hive.openBox<Job>(jobsBox);
     await Hive.openBox<WorkSession>(sessionsBox);
@@ -142,7 +142,7 @@ class HiveService {
     for (var job in getAllJobs()) {
       totalHoursWorked += getSessionsForJob(job.id).fold(0.0, (sum, session) {
         if (session.date.month == now.month && session.date.year == now.year) {
-          return sum + session.getHoursWorked();
+          return sum + job.getWorkHoursForSession(session);
         }
         return sum;
       });
@@ -169,7 +169,7 @@ class HiveService {
     double totalHoursWorked = sessions.fold(0.0, (sum, session) {
       if (session.date.month == DateTime.now().month &&
           session.date.year == DateTime.now().year) {
-        return sum + session.getHoursWorked();
+        return sum + job.getWorkHoursForSession(session);
       }
       return sum;
     });

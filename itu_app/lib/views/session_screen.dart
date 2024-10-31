@@ -1,4 +1,5 @@
 // session_screen.dart
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
 import '../controllers/template_controller.dart';
@@ -175,8 +176,8 @@ class _SessionScreenState extends State<SessionScreen> {
                                     ),
                                   ],
                                 ),
-                                const Text(
-                                  'od - do',
+                                Text(
+                                  '${DateFormat('HH:mm').format(session.startTime)} - ${DateFormat('HH:mm').format(session.endTime)}',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
