@@ -30,6 +30,7 @@ class TemplateController {
     var now = DateTime.now();
     var addDay = _cmpTimeOfDay(startTime, endTime) ? 0 : 1;
     return WorkSession(
+      sessionId: 0,
       templateId: id,
       jobId: jobId,
       date: now,

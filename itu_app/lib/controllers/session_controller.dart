@@ -17,7 +17,9 @@ class SessionController {
 
   WorkSession _createNewSession(int jobId, int templateId) {
     var template = hiveService.getSessionTemplatesForJob(jobId)[templateId];
+    var sessionId = hiveService.getNewSessionId();
     return WorkSession(
+      sessionId: sessionId,
         jobId: jobId,
         date: DateTime.now(),
         startTime: template.startTime,

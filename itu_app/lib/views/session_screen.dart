@@ -58,7 +58,7 @@ class _SessionScreenState extends State<SessionScreen> {
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel')),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.black))),
               ElevatedButton(
                   onPressed: () => {
                         jobController.deleteJob(widget.jobId),
@@ -66,7 +66,7 @@ class _SessionScreenState extends State<SessionScreen> {
                         Navigator.pop(context)
                       },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: const Text('delete'))
+                  child: const Text('Delete', style: TextStyle(color: Colors.black)))
             ],
           );
         });
@@ -134,51 +134,54 @@ class _SessionScreenState extends State<SessionScreen> {
             flex: 2,
             child: sessions.isNotEmpty
                 ? ListView.builder(
-                    itemCount: sessions.length,
-                    itemBuilder: (context, index) {
-                      WorkSession session = sessions[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                              maxWidth: 375, maxHeight: 72),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 15),
-                            decoration: BoxDecoration(
-                              color: Colors.white, // White background
-                              borderRadius:
-                                  BorderRadius.circular(60), // Rounded corners
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(
-                                      0, 2), // Subtle shadow for depth
-                                ),
-                              ],
+              itemCount: sessions.length,
+              itemBuilder: (context, index) {
+                WorkSession session = sessions[index];
+                return Dismissible(
+                  key: Key('${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) async {
+                    await sessionController.deleteSession(session);
+                    setState(() {
+                      sessions.removeAt(index); // Remove session from the list
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Session deleted')),
+                    );
+                  },
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    color: Colors.red,
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        decoration: BoxDecoration(
+                          color: Colors.white, // White background
+                          borderRadius: BorderRadius.circular(60), // Rounded corners
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2), // Subtle shadow for depth
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '${session.date.day}.${session.date.month}.${session.date.year}',
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                                 Text(
-                                  '${DateFormat('HH:mm').format(session.startTime)} - ${DateFormat('HH:mm').format(session.endTime)}',
-                                  style: TextStyle(
+                                  '${session.date.day}.${session.date.month}.${session.date.year}',
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
@@ -186,21 +189,31 @@ class _SessionScreenState extends State<SessionScreen> {
                                 ),
                               ],
                             ),
-                          ),
+                            Text(
+                              '${DateFormat('HH:mm').format(session.startTime)} - ${DateFormat('HH:mm').format(session.endTime)}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  )
-                : const Center(
-                    child: Text(
-                      'No sessions added yet.',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                      ),
                     ),
                   ),
+                );
+              },
+            )
+                : const Center(
+              child: Text(
+                'No sessions added yet.',
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
           ),
+
           Padding(
             padding: const EdgeInsets.symmetric(
                 vertical: 20.0,
@@ -282,8 +295,7 @@ class _SessionScreenState extends State<SessionScreen> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  sessionController.addWorkSession(widget.jobId, index);
-                                  loadSessions(); // Reload sessions after adding from template
+                                  // TODO
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0x91D4FFFF),
@@ -303,7 +315,8 @@ class _SessionScreenState extends State<SessionScreen> {
                               const SizedBox(width: 10), // Fixed spacing between buttons
                               ElevatedButton(
                                 onPressed: () {
-                                  // TODO
+                                  sessionController.addWorkSession(widget.jobId, index);
+                                  loadSessions(); // Reload sessions after adding from template
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0x91D4FFFF),

@@ -17,6 +17,7 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return WorkSession(
+      sessionId: fields[6] as int,
       templateId: fields[0] as int,
       jobId: fields[1] as int,
       date: fields[2] as DateTime,
@@ -29,7 +30,9 @@ class WorkSessionAdapter extends TypeAdapter<WorkSession> {
   @override
   void write(BinaryWriter writer, WorkSession obj) {
     writer
+      ..writeByte(7)
       ..writeByte(6)
+      ..write(obj.sessionId)
       ..writeByte(0)
       ..write(obj.templateId)
       ..writeByte(1)

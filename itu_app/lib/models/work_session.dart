@@ -4,6 +4,9 @@ part 'work_session.g.dart'; // Code generation for Hive
 
 @HiveType(typeId: 2)
 class WorkSession {
+  @HiveField(6)
+  int sessionId;
+
   @HiveField(0)
   int templateId;
 
@@ -23,6 +26,7 @@ class WorkSession {
   String? name;
 
   WorkSession({
+    required this.sessionId,
     this.templateId = 0,
     required this.jobId,
     required this.date,

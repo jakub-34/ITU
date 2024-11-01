@@ -91,8 +91,8 @@ class HiveService {
 
     for (var key in box.keys) {
       WorkSession? boxSession = box.get(key);
-      if (boxSession!.date == session.date &&
-          boxSession.jobId == session.jobId) {
+      if (boxSession!.jobId == session.jobId &&
+          boxSession.sessionId == session.sessionId) {
         await box.delete(key);
       }
     }
@@ -182,6 +182,14 @@ class HiveService {
       return 1;
     }
     return jobs.map((job) => job.id).reduce((a, b) => a > b ? a : b) + 1;
+  }
+
+  int getNewSessionId() {
+    var sessions = Hive.box<WorkSession>('sessionsBox').values.toList();
+    if (sessions.isEmpty) {
+      return 1;
+    }
+    return sessions.map((session) => session.sessionId).reduce((a, b) => a > b ? a : b) + 1;
   }
 
   int getNewTemplateId() {
