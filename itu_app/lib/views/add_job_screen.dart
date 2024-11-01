@@ -83,8 +83,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildOptNumberInput('Break Time',
-                      (value) => _breakHours = double.tryParse(value) ?? 0.0),
+                  _buildOptNumberInput('Break Time (min)',
+                      (value) => _breakHours = 1/(60/(double.tryParse(value) ?? 0.0))),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
                   _buildOptNumberInput(
                       'Hours till break',
