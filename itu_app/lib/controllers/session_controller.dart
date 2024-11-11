@@ -29,4 +29,8 @@ class SessionController {
   Future<void> deleteSession(WorkSession session) {
     return hiveService.deleteSession(session);
   }
+
+  void addWorkSessionFromSession(WorkSession session) {
+    hiveService.addWorkSession(session);
+  }
 }

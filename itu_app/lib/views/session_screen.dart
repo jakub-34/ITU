@@ -141,12 +141,28 @@ class _SessionScreenState extends State<SessionScreen> {
                   key: Key('${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) async {
+                    // Store session temporarily
+                    WorkSession deletedSession = session;
+                    int deletedIndex = index;
+
                     await sessionController.deleteSession(session);
                     setState(() {
                       sessions.removeAt(index); // Remove session from the list
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Session deleted')),
+                      SnackBar(
+                          content: Text('Session deleted'),
+                          action: SnackBarAction(
+                          label: 'Undo',
+                            onPressed: () {
+                            // Re-add deleted session
+                              setState(() {
+                                sessions.insert(deletedIndex, deletedSession);
+                              });
+                              sessionController.addWorkSessionFromSession(deletedSession);
+                            },
+                      )
+                      ),
                     );
                   },
                   background: Container(
