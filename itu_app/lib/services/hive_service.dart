@@ -189,7 +189,10 @@ class HiveService {
     if (sessions.isEmpty) {
       return 1;
     }
-    return sessions.map((session) => session.sessionId).reduce((a, b) => a > b ? a : b) + 1;
+    return sessions
+            .map((session) => session.sessionId)
+            .reduce((a, b) => a > b ? a : b) +
+        1;
   }
 
   int getNewTemplateId() {

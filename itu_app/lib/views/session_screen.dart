@@ -1,4 +1,6 @@
 // session_screen.dart
+import 'dart:async';
+
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
@@ -26,25 +28,25 @@ class SessionScreen extends StatefulWidget {
 }
 
 class _SessionScreenState extends State<SessionScreen> {
-  late SessionController sessionController;
-  late JobController jobController;
-  late TemplateController templateController;
-  List<WorkSession> sessions = [];
-  List<WorkSession> templates = [];
+  late SessionController _sessionController;
+  late JobController _jobController;
+  late TemplateController _templateController;
+  List<WorkSession> _sessions = [];
+  List<WorkSession> _templates = [];
 
   @override
   void initState() {
     super.initState();
-    sessionController = SessionController(HiveService());
-    jobController = JobController(HiveService());
-    templateController = TemplateController(HiveService());
+    _sessionController = SessionController(HiveService());
+    _jobController = JobController(HiveService());
+    _templateController = TemplateController(HiveService());
     loadSessions();
   }
 
   void loadSessions() {
     setState(() {
-      sessions = sessionController.getSessionsForJob(widget.jobId);
-      templates = templateController.getTemplatesForJob(widget.jobId);
+      _sessions = _sessionController.getSessionsForJob(widget.jobId);
+      _templates = _templateController.getTemplatesForJob(widget.jobId);
     });
   }
 
@@ -58,15 +60,17 @@ class _SessionScreenState extends State<SessionScreen> {
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.black))),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.black))),
               ElevatedButton(
                   onPressed: () => {
-                        jobController.deleteJob(widget.jobId),
+                        _jobController.deleteJob(widget.jobId),
                         Navigator.pop(context),
                         Navigator.pop(context)
                       },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: const Text('Delete', style: TextStyle(color: Colors.black)))
+                  child: const Text('Delete',
+                      style: TextStyle(color: Colors.black)))
             ],
           );
         });
@@ -132,102 +136,115 @@ class _SessionScreenState extends State<SessionScreen> {
 
           Expanded(
             flex: 2,
-            child: sessions.isNotEmpty
+            child: _sessions.isNotEmpty
                 ? ListView.builder(
-              itemCount: sessions.length,
-              itemBuilder: (context, index) {
-                WorkSession session = sessions[index];
-                return Dismissible(
-                  key: Key('${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (direction) async {
-                    // Store session temporarily
-                    WorkSession deletedSession = session;
-                    int deletedIndex = index;
+                    itemCount: _sessions.length,
+                    itemBuilder: (context, index) {
+                      WorkSession session = _sessions[index];
+                      return Dismissible(
+                        key: Key(
+                            '${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) async {
+                          // Store session temporarily
+                          WorkSession deletedSession = session;
+                          int deletedIndex = index;
 
-                    await sessionController.deleteSession(session);
-                    setState(() {
-                      sessions.removeAt(index); // Remove session from the list
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Session deleted'),
-                          action: SnackBarAction(
-                          label: 'Undo',
-                            onPressed: () {
-                            // Re-add deleted session
-                              setState(() {
-                                sessions.insert(deletedIndex, deletedSession);
-                              });
-                              sessionController.addWorkSessionFromSession(deletedSession);
-                            },
-                      )
-                      ),
-                    );
-                  },
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    color: Colors.red,
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.white, // White background
-                          borderRadius: BorderRadius.circular(60), // Rounded corners
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2), // Subtle shadow for depth
-                            ),
-                          ],
+                          await _sessionController.deleteSession(session);
+                          setState(() {
+                            _sessions.removeAt(
+                                index); // Remove session from the list
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: const Text('Session deleted'),
+                                action: SnackBarAction(
+                                  label: 'Undo',
+                                  onPressed: () {
+                                    // Re-add deleted session
+                                    setState(() {
+                                      _sessions.insert(
+                                          deletedIndex, deletedSession);
+                                    });
+                                    _sessionController
+                                        .addWorkSessionFromSession(
+                                            deletedSession);
+                                  },
+                                )),
+                          );
+                        },
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          color: Colors.red,
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '${session.date.day}.${session.date.month}.${session.date.year}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                                maxWidth: 410, maxHeight: 72),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 15),
+                              decoration: BoxDecoration(
+                                color: Colors.white, // White background
+                                borderRadius: BorderRadius.circular(
+                                    60), // Rounded corners
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: const Offset(
+                                        0, 2), // Subtle shadow for depth
                                   ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              '${DateFormat('HH:mm').format(session.startTime)} - ${DateFormat('HH:mm').format(session.endTime)}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '${session.date.day}.${session.date.month}.${session.date.year}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '${DateFormat('HH:mm').format(session.startTime)} - ${DateFormat('HH:mm').format(session.endTime)}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      );
+                    },
+                  )
+                : const Center(
+                    child: Text(
+                      'No sessions added yet.',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
-                );
-              },
-            )
-                : const Center(
-              child: Text(
-                'No sessions added yet.',
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
           ),
 
           Padding(
@@ -243,129 +260,153 @@ class _SessionScreenState extends State<SessionScreen> {
           Expanded(
             flex: 1,
             child: ListView.builder(
-              itemCount: templates.length + 1, // Always include the "Add workday" button as the last item
+              itemCount: _templates.length +
+                  1, // Always include the "Add workday" button as the last item
               itemBuilder: (BuildContext context, int index) {
-                if (index == templates.length) {
-                  // Add workday button at the bottom of the templates list
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddSessionScreen(job: widget.job),
-                            ),
-                          ).then((_) => loadSessions());
-                        },
-                        label: const Text('Add template', style: TextStyle(color: Colors.black)),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
-                          backgroundColor: Colors.white, // White button background
-                          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                // Template item
-                WorkSession template = templates[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      decoration: BoxDecoration(
-                        color: Colors.white, // White background
-                        borderRadius: BorderRadius.circular(60), // Rounded corners
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2), // Subtle shadow for depth
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${template.name}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  // TODO
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0x91D4FFFF),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(60),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Set date',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10), // Fixed spacing between buttons
-                              ElevatedButton(
-                                onPressed: () {
-                                  sessionController.addWorkSession(widget.jobId, index);
-                                  loadSessions(); // Reload sessions after adding from template
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0x91D4FFFF),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(60),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Add Shift',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
+                return index == _templates.length
+                    ?
+                    // Add workday button at the bottom of the templates list
+                    _buildNewTemplateButton(context)
+                    :
+                    // Template item
+                    _buildTemplateButton(index);
               },
             ),
           ),
-
-
-
-          // Add New Job button
           const SizedBox(height: 30.0), // Additional spacing below the button
         ],
       ),
     );
+  }
+
+  Padding _buildTemplateButton(int index) {
+    WorkSession template = _templates[index];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          decoration: BoxDecoration(
+            color: Colors.white, // White background
+            borderRadius: BorderRadius.circular(60), // Rounded corners
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2), // Subtle shadow for depth
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '${template.name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _pickDate(context, template.templateId);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0x91D4FFFF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(60),
+                      ),
+                    ),
+                    child: Text(
+                      DateFormat("EEE, d.m.").format(DateTime.now()),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Fixed spacing between buttons
+                  ElevatedButton(
+                    onPressed: () {
+                      _sessionController.addWorkSession(
+                        widget.jobId,
+                        templateId: index,
+                      );
+                      loadSessions(); // Reload sessions after adding from template
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0x91D4FFFF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(60),
+                      ),
+                    ),
+                    child: const Text(
+                      'Add Shift',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _buildNewTemplateButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddSessionScreen(job: widget.job),
+              ),
+            ).then((_) => loadSessions());
+          },
+          label:
+              const Text('Add template', style: TextStyle(color: Colors.black)),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
+            backgroundColor: Colors.white, // White button background
+            textStyle:
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickDate(BuildContext context, int templateId) async {
+    final DateTime? newDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (newDate != null) {
+      _sessionController.addWorkSession(widget.jobId,
+          templateId: templateId, date: newDate);
+      loadSessions();
+    }
   }
 }

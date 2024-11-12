@@ -26,6 +26,9 @@ class Job {
   @HiveField(6)
   double hoursTillBreak;
 
+  @HiveField(7)
+  bool usesTepmates;
+
   Job(
       {required this.id,
       required this.title,
@@ -33,7 +36,8 @@ class Job {
       this.saturdayRate = 0.0,
       this.sundayRate = 0.0,
       this.breakHours = 0.0,
-      this.hoursTillBreak = 0.0});
+      this.hoursTillBreak = 0.0,
+      this.usesTepmates = false});
 
   double getRateForSession(WorkSession session) {
     var sessionDate = session.date;
@@ -54,7 +58,6 @@ class Job {
 
     var totalHoursWorked = basicHoursWorked -
         (basicHoursWorked / hoursTillBreak).floor() * breakHours;
-    print(totalHoursWorked);
     return totalHoursWorked;
   }
 }
