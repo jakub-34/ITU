@@ -18,12 +18,13 @@ class _AddJobScreenState extends State<AddJobScreen> {
   double _sundayRate = 0.0;
   double _breakHours = 0.0;
   double _hoursTillBreak = 0.0;
+  bool _usetTemplates = false;
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       widget.jobController.addJob(_title, _weekdayRate, _saturdayRate,
-          _sundayRate, _breakHours, _hoursTillBreak);
+          _sundayRate, _breakHours, _hoursTillBreak, _usetTemplates);
       Navigator.pop(context);
     }
   }
@@ -83,14 +84,28 @@ class _AddJobScreenState extends State<AddJobScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildOptNumberInput('Break Time (min)',
-                      (value) => _breakHours = 1/(60/(double.tryParse(value) ?? 0.0))),
+                  _buildOptNumberInput(
+                      'Break Time (min)',
+                      (value) => _breakHours =
+                          1 / (60 / (double.tryParse(value) ?? 0.0))),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
                   _buildOptNumberInput(
                       'Hours till break',
                       (value) =>
                           _hoursTillBreak = double.tryParse(value) ?? 0.0),
                 ],
+              ),
+              CheckboxListTile.adaptive(
+                title: const Text(
+                  "use templates",
+                  style: TextStyle(color: Colors.white),
+                ),
+                value: _usetTemplates,
+                onChanged: (bool? newVal) {
+                  setState(() {
+                    _usetTemplates = newVal!;
+                  });
+                },
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
