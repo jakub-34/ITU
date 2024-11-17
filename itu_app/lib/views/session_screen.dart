@@ -267,9 +267,48 @@ class _SessionScreenState extends State<SessionScreen> {
                     ?
                     // Add workday button at the bottom of the templates list
                     _buildNewTemplateButton(context)
-                    :
-                    // Template item
-                    _buildTemplateButton(index);
+                    : Dismissible(
+                        key: Key(
+                            '${widget.jobId}-${_templates[index].templateId}'),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) async {
+                          var tempateToDelete = _templates[index];
+                          setState(() {
+                            _templates.removeAt(index);
+                          });
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                                SnackBar(
+                                  content: const Text("Template deleted"),
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    onPressed: () {
+                                      setState(() {
+                                        _templates.insert(
+                                            index, tempateToDelete);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )
+                              .closed
+                              .then((reason) {
+                            if (reason != SnackBarClosedReason.action) {
+                              _templateController
+                                  .deleteTemplate(_templates[index]);
+                            }
+                          });
+                        },
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          color: Colors.red,
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        child:
+                            // Template item
+                            _buildTemplateButton(index),
+                      );
               },
             ),
           ),
@@ -280,54 +319,51 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Padding _buildTemplateButton(int index) {
-    WorkSession template = _templates[index];
+    var template = _templates[index];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          decoration: BoxDecoration(
-            color: Colors.white, // White background
-            borderRadius: BorderRadius.circular(60), // Rounded corners
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 4,
-                offset: const Offset(0, 2), // Subtle shadow for depth
-              ),
-            ],
+        constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
+        child: ElevatedButton(
+          onPressed: () {
+            _sessionController.addWorkSession(widget.jobId,
+                templateId: template.templateId);
+            loadSessions();
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            backgroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(60)),
+            shadowColor: Colors.black.withOpacity(0.1),
+            textStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${template.name}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+              Center(
+                child: Text(
+                  '${template.name}',
+                  style: const TextStyle(
+                    color: Colors.black,
                   ),
-                ],
+                ),
               ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _pickDate(context, template.templateId);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0x91D4FFFF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(60),
-                      ),
-                    ),
-                    child: Text(
+              ElevatedButton(
+                onPressed: () {
+                  _pickDate(context, template.templateId);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  elevation: 0,
+                ),
+                child: Row(
+                  children: [
+                    Text(
                       DateFormat("EEE, d.m.").format(DateTime.now()),
                       style: const TextStyle(
                         fontSize: 14,
@@ -335,32 +371,13 @@ class _SessionScreenState extends State<SessionScreen> {
                         color: Colors.black,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10), // Fixed spacing between buttons
-                  ElevatedButton(
-                    onPressed: () {
-                      _sessionController.addWorkSession(
-                        widget.jobId,
-                        templateId: index,
-                      );
-                      loadSessions(); // Reload sessions after adding from template
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0x91D4FFFF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(60),
-                      ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.calendar_today,
+                      size: 16,
                     ),
-                    child: const Text(
-                      'Add Shift',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
