@@ -11,9 +11,10 @@ class JobController {
       [double saturdayRate = 0.0,
       double sundayRate = 0.0,
       double breakHours = 0.0,
-      double hoursTillBreak = 0.0]) async {
+      double hoursTillBreak = 0.0,
+      bool useTemplates = false]) async {
     var newJob = _createNewJob(title, weekDayRate, saturdayRate, sundayRate,
-        breakHours, hoursTillBreak);
+        breakHours, hoursTillBreak, useTemplates);
     await hiveService.addJob(newJob);
   }
 
@@ -49,7 +50,8 @@ class JobController {
       [double saturdayRate = 0.0,
       double sundayRate = 0.0,
       double breakHours = 0.0,
-      double hoursTillBreak = 0.0]) {
+      double hoursTillBreak = 0.0,
+      bool useTemplates = false]) {
     var id = hiveService.getNewJobId();
     return Job(
         id: id,
@@ -58,6 +60,7 @@ class JobController {
         saturdayRate: saturdayRate,
         sundayRate: sundayRate,
         breakHours: breakHours,
-        hoursTillBreak: hoursTillBreak);
+        hoursTillBreak: hoursTillBreak,
+        usesTepmates: useTemplates);
   }
 }

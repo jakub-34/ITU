@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
 import '../controllers/template_controller.dart';
@@ -33,6 +34,7 @@ class _SessionScreenState extends State<SessionScreen> {
   late TemplateController _templateController;
   List<WorkSession> _sessions = [];
   List<WorkSession> _templates = [];
+  List<Tuple2<int, WorkSession>> _recentlyDeletedTemplates = [];
 
   @override
   void initState() {
@@ -272,7 +274,8 @@ class _SessionScreenState extends State<SessionScreen> {
                             '${widget.jobId}-${_templates[index].templateId}'),
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) async {
-                          var tempateToDelete = _templates[index];
+                          _recentlyDeletedTemplates
+                              .add(Tuple2(index, _templates[index]));
                           setState(() {
                             _templates.removeAt(index);
                           });
@@ -283,10 +286,14 @@ class _SessionScreenState extends State<SessionScreen> {
                                   action: SnackBarAction(
                                     label: 'Undo',
                                     onPressed: () {
+                                      var itemIdx =
+                                          _recentlyDeletedTemplates.last.item1;
+                                      var item =
+                                          _recentlyDeletedTemplates.last.item2;
                                       setState(() {
-                                        _templates.insert(
-                                            index, tempateToDelete);
+                                        _templates.insert(itemIdx, item);
                                       });
+                                      _recentlyDeletedTemplates.removeLast();
                                     },
                                   ),
                                 ),
@@ -296,6 +303,7 @@ class _SessionScreenState extends State<SessionScreen> {
                             if (reason != SnackBarClosedReason.action) {
                               _templateController
                                   .deleteTemplate(_templates[index]);
+                              loadSessions();
                             }
                           });
                         },
