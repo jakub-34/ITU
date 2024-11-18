@@ -4,6 +4,7 @@ import '../models/job.dart';
 import '../services/hive_service.dart';
 import 'session_screen.dart';
 import 'add_job_screen.dart';
+import 'NonTemplateSessionScreen';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -53,16 +54,31 @@ class _MainScreenState extends State<MainScreen> {
                               maxWidth: 375, maxHeight: 72),
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SessionScreen(
-                                    jobId: jobs[index].id,
-                                    jobTitle: jobs[index].title,
-                                    job: jobs[index],
+                              // Check the useTemplates property to decide which screen to navigate to
+                              if (jobs[index].usesTepmates) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SessionScreen(
+                                          jobId: jobs[index].id,
+                                          jobTitle: jobs[index].title,
+                                          job: jobs[index],
+                                        ),
                                   ),
-                                ),
-                              ).then((_) => loadJobs());
+                                ).then((_) => loadJobs());
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NonTemplateSessionScreen(
+                                      jobId: jobs[index].id,
+                                      jobTitle: jobs[index].title,
+                                      job: jobs[index],
+                                    ),
+                                  ),
+                                ).then((_) => loadJobs());
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
@@ -169,7 +185,7 @@ class _MainScreenState extends State<MainScreen> {
                           (_) => loadJobs()); // Reload jobs after adding a job
                     },
                     label: const Text('Add new job',
-                        style: TextStyle(color: Colors.black)),
+                        style: TextStyle(color: Colors.black), maxLines: 1),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 138, vertical: 25),

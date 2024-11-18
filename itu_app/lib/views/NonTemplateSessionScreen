@@ -1,23 +1,22 @@
-// session_screen.dart
+// non_template_session_screen.dart
 import 'dart:async';
 
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
-import '../controllers/template_controller.dart';
 import '../controllers/session_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
 import '../services/hive_service.dart';
 import 'add_session_screen.dart';
+import 'AddNonTemplateSession.dart';
 
-class SessionScreen extends StatefulWidget {
+class NonTemplateSessionScreen extends StatefulWidget {
   final int jobId;
   final String jobTitle;
   final Job job;
 
-  const SessionScreen({
+  const NonTemplateSessionScreen({
     super.key,
     required this.jobId,
     required this.jobTitle,
@@ -25,30 +24,26 @@ class SessionScreen extends StatefulWidget {
   });
 
   @override
-  _SessionScreenState createState() => _SessionScreenState();
+  _NonTemplateSessionScreenState createState() =>
+      _NonTemplateSessionScreenState();
 }
 
-class _SessionScreenState extends State<SessionScreen> {
+class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
   late SessionController _sessionController;
   late JobController _jobController;
-  late TemplateController _templateController;
   List<WorkSession> _sessions = [];
-  List<WorkSession> _templates = [];
-  List<Tuple2<int, WorkSession>> _recentlyDeletedTemplates = [];
 
   @override
   void initState() {
     super.initState();
     _sessionController = SessionController(HiveService());
     _jobController = JobController(HiveService());
-    _templateController = TemplateController(HiveService());
     loadSessions();
   }
 
   void loadSessions() {
     setState(() {
       _sessions = _sessionController.getSessionsForJob(widget.jobId);
-      _templates = _templateController.getTemplatesForJob(widget.jobId);
     });
   }
 
@@ -259,179 +254,36 @@ class _SessionScreenState extends State<SessionScreen> {
             padding: EdgeInsets.symmetric(
                 horizontal: 20.0), // Align Total and button consistently
           ),
-          Expanded(
-            flex: 1,
-            child: ListView.builder(
-              itemCount: _templates.length +
-                  1, // Always include the "Add workday" button as the last item
-              itemBuilder: (BuildContext context, int index) {
-                return index == _templates.length
-                    ?
-                    // Add workday button at the bottom of the templates list
-                    _buildNewTemplateButton(context)
-                    : Dismissible(
-                        key: Key(
-                            '${widget.jobId}-${_templates[index].templateId}'),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) async {
-                          _recentlyDeletedTemplates
-                              .add(Tuple2(index, _templates[index]));
-                          setState(() {
-                            _templates.removeAt(index);
-                          });
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(
-                                SnackBar(
-                                  content: const Text("Template deleted"),
-                                  action: SnackBarAction(
-                                    label: 'Undo',
-                                    onPressed: () {
-                                      var itemIdx =
-                                          _recentlyDeletedTemplates.last.item1;
-                                      var item =
-                                          _recentlyDeletedTemplates.last.item2;
-                                      setState(() {
-                                        _templates.insert(itemIdx, item);
-                                      });
-                                      _recentlyDeletedTemplates.removeLast();
-                                    },
-                                  ),
-                                ),
-                              )
-                              .closed
-                              .then((reason) {
-                            if (reason != SnackBarClosedReason.action) {
-                              _templateController
-                                  .deleteTemplate(_templates[index]);
-                              loadSessions();
-                            }
-                          });
-                        },
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          color: Colors.red,
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-                        child:
-                            // Template item
-                            _buildTemplateButton(index),
-                      );
-              },
+
+          // Add New Session button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 475, maxHeight: 72),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddNonTemplateSession(job: widget.job),
+                    ),
+                  ).then((_) => loadSessions());
+                },
+                label: const Text('Add workday',
+                    style: TextStyle(color: Colors.black), maxLines: 1),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 138, vertical: 25),
+                  backgroundColor: Colors.white, // White button background
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 30.0), // Additional spacing below the button
         ],
       ),
     );
-  }
-
-  Padding _buildTemplateButton(int index) {
-    var template = _templates[index];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
-        child: ElevatedButton(
-          onPressed: () {
-            _sessionController.addWorkSession(widget.jobId,
-                templateId: template.templateId);
-            loadSessions();
-          },
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            backgroundColor: Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(60)),
-            shadowColor: Colors.black.withOpacity(0.1),
-            textStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Center(
-                child: Text(
-                  '${template.name}',
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _pickDate(context, template.templateId);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      DateFormat("EEE, d.m.").format(DateTime.now()),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.calendar_today,
-                      size: 16,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Padding _buildNewTemplateButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
-        child: ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddSessionScreen(job: widget.job),
-              ),
-            ).then((_) => loadSessions());
-          },
-          label:
-              const Text('Add template', style: TextStyle(color: Colors.black), maxLines: 1),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
-            backgroundColor: Colors.white, // White button background
-            textStyle:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _pickDate(BuildContext context, int templateId) async {
-    final DateTime? newDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (newDate != null) {
-      _sessionController.addWorkSession(widget.jobId,
-          templateId: templateId, date: newDate);
-      loadSessions();
-    }
   }
 }
