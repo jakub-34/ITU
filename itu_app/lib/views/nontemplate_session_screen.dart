@@ -8,8 +8,7 @@ import '../controllers/session_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
 import '../services/hive_service.dart';
-import 'add_session_screen.dart';
-import 'AddNonTemplateSession.dart';
+import 'add_nontemplate_session.dart';
 
 class NonTemplateSessionScreen extends StatefulWidget {
   final int jobId;
