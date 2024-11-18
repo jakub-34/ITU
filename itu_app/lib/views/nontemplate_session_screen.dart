@@ -138,72 +138,89 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                     itemBuilder: (context, index) {
                       WorkSession session = _sessions[index];
                       return Dismissible(
-                        key: Key(
-                            '${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) async {
-                          // Store session temporarily
-                          WorkSession deletedSession = session;
-                          int deletedIndex = index;
-
-                          await _sessionController.deleteSession(session);
-                          setState(() {
-                            _sessions.removeAt(
-                                index); // Remove session from the list
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: const Text('Session deleted'),
-                                action: SnackBarAction(
-                                  label: 'Undo',
-                                  onPressed: () {
-                                    // Re-add deleted session
-                                    setState(() {
-                                      _sessions.insert(
-                                          deletedIndex, deletedSession);
-                                    });
-                                    _sessionController
-                                        .addWorkSessionFromSession(
-                                            deletedSession);
-                                  },
-                                )),
-                          );
+                        key: Key('${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
+                        direction: DismissDirection.horizontal, // Allow both swipe directions
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.endToStart) {
+                            // Handle left swipe to delete
+                            // Store session temporarily
+                            WorkSession deletedSession = session;
+                            int deletedIndex = index;
+                            await _sessionController.deleteSession(session);
+                            setState(() {
+                              _sessions.removeAt(index); // Remove session from the list
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: const Text('Session deleted'),
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    onPressed: () {
+                                      // Re-add deleted session
+                                      setState(() {
+                                        _sessions.insert(
+                                            deletedIndex, deletedSession);
+                                      });
+                                      _sessionController
+                                          .addWorkSessionFromSession(
+                                          deletedSession);
+                                    },
+                                  )),
+                            );
+                            return true; // Return true to confirm the dismissal
+                          } else if (direction == DismissDirection.startToEnd) {
+                            // Handle right swipe to create a new session
+                            var newSession = WorkSession(
+                              sessionId: _sessionController.hiveService.getNewSessionId(),
+                              jobId: session.jobId,
+                              date: DateTime.now(), // Use today's date
+                              startTime: session.startTime,
+                              endTime: session.endTime,
+                            );
+                            _sessionController.addWorkSessionFromSession(newSession);
+                            // Reload sessions to immediately reflect the new session
+                            loadSessions();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('New session created for today')),
+                            );
+                            return false; // Return false to prevent the widget from being dismissed
+                          }
+                          return false; // By default, don't dismiss
                         },
                         background: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          color: Colors.green,
+                          child: const Icon(Icons.add, color: Colors.white),
+                        ),
+                        secondaryBackground: Container(
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           color: Colors.red,
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                maxWidth: 410, maxHeight: 72),
+                            constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 15),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                               decoration: BoxDecoration(
                                 color: Colors.white, // White background
-                                borderRadius: BorderRadius.circular(
-                                    60), // Rounded corners
+                                borderRadius: BorderRadius.circular(60), // Rounded corners
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
                                     blurRadius: 4,
-                                    offset: const Offset(
-                                        0, 2), // Subtle shadow for depth
+                                    offset: const Offset(0, 2), // Subtle shadow for depth
                                   ),
                                 ],
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(

@@ -4,7 +4,7 @@ import '../models/job.dart';
 import '../services/hive_service.dart';
 import 'session_screen.dart';
 import 'add_job_screen.dart';
-import 'NonTemplateSessionScreen';
+import 'nontemplate_session_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
