@@ -1,8 +1,10 @@
+//author: Tomáš Zgút
 import 'package:hive/hive.dart';
 import 'package:itu_app/models/work_session.dart';
 
 part 'job.g.dart'; // Code generation for Hive
 
+/// Class used as a model to store all date realted to a job
 @HiveType(typeId: 1)
 class Job {
   @HiveField(0)
@@ -29,6 +31,7 @@ class Job {
   @HiveField(7)
   bool usesTepmates;
 
+  /// class constructor
   Job(
       {required this.id,
       required this.title,
@@ -39,6 +42,7 @@ class Job {
       this.hoursTillBreak = 0.0,
       this.usesTepmates = false});
 
+  /// Method returns the horuly rate for a given [session]
   double getRateForSession(WorkSession session) {
     var sessionDate = session.date;
     var rate = weekDayRate;
@@ -50,6 +54,7 @@ class Job {
     return rate;
   }
 
+  /// Methods returns the hours worked for a given [session]
   double getWorkHoursForSession(WorkSession session) {
     var basicHoursWorked = session.getHoursWorked();
     if (hoursTillBreak == 0.0) {

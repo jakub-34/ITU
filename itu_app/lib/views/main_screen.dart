@@ -59,19 +59,19 @@ class _MainScreenState extends State<MainScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        SessionScreen(
-                                          jobId: jobs[index].id,
-                                          jobTitle: jobs[index].title,
-                                          job: jobs[index],
-                                        ),
+                                    builder: (context) => SessionScreen(
+                                      jobId: jobs[index].id,
+                                      jobTitle: jobs[index].title,
+                                      job: jobs[index],
+                                    ),
                                   ),
                                 ).then((_) => loadJobs());
                               } else {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => NonTemplateSessionScreen(
+                                    builder: (context) =>
+                                        NonTemplateSessionScreen(
                                       jobId: jobs[index].id,
                                       jobTitle: jobs[index].title,
                                       job: jobs[index],

@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'work_session.g.dart'; // Code generation for Hive
 
+/// Class used as a model for worksessions and session templates in the backend
 @HiveType(typeId: 2)
 class WorkSession {
   @HiveField(6)
@@ -25,6 +26,7 @@ class WorkSession {
   @HiveField(5)
   String? name;
 
+  /// class onstructor
   WorkSession({
     required this.sessionId,
     this.templateId = 0,
@@ -35,6 +37,7 @@ class WorkSession {
     this.name,
   });
 
+  /// Method returns the total hours worked in a session
   double getHoursWorked() {
     return endTime.difference(startTime).inMinutes / 60.0;
   }

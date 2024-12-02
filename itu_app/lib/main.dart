@@ -1,3 +1,4 @@
+//author: Tomáš Zgút
 import 'package:flutter/material.dart';
 import 'views/main_screen.dart';
 import 'services/hive_service.dart';
@@ -8,13 +9,14 @@ void main() async {
   runApp(const MyApp());
 }
 
+/// Class representing the whole aplication
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Part-Time Job Tracker',
+      title: 'Job Tracker',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

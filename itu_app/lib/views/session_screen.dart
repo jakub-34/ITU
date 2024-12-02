@@ -1,6 +1,6 @@
-// session_screen.dart
+// author: Jakub Hrdlička
+// author: Tomáš Zgút
 import 'dart:async';
-
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,7 @@ import '../models/work_session.dart';
 import '../services/hive_service.dart';
 import 'add_session_screen.dart';
 
+/// Class holds the session screen
 class SessionScreen extends StatefulWidget {
   final int jobId;
   final String jobTitle;
@@ -28,30 +29,34 @@ class SessionScreen extends StatefulWidget {
   _SessionScreenState createState() => _SessionScreenState();
 }
 
+/// Class holds the state of the session screen
 class _SessionScreenState extends State<SessionScreen> {
-  late SessionController _sessionController;
-  late JobController _jobController;
-  late TemplateController _templateController;
-  List<WorkSession> _sessions = [];
+  late SessionController sessionController;
+  late final JobController _jobController;
+  late final TemplateController _templateController;
+  List<WorkSession> sessions = [];
   List<WorkSession> _templates = [];
-  List<Tuple2<int, WorkSession>> _recentlyDeletedTemplates = [];
+  final List<Tuple2<int, WorkSession>> _recentlyDeletedTemplates = [];
 
   @override
   void initState() {
     super.initState();
-    _sessionController = SessionController(HiveService());
+    sessionController = SessionController(HiveService());
     _jobController = JobController(HiveService());
     _templateController = TemplateController(HiveService());
-    loadSessions();
+    _loadassetes();
   }
 
-  void loadSessions() {
+  /// Private method for loading all the assetes from the backend
+  void _loadassetes() {
     setState(() {
-      _sessions = _sessionController.getSessionsForJob(widget.jobId);
+      sessions = sessionController.getSessionsForJob(widget.jobId);
       _templates = _templateController.getTemplatesForJob(widget.jobId);
     });
   }
 
+  /// Private method for showing the confirmation dialog for deleting a job
+  /// Note: Author is Tomáš Zgút
   Future<void> _deleteConfirmDialog() async {
     return await showDialog(
         context: context,
@@ -115,6 +120,7 @@ class _SessionScreenState extends State<SessionScreen> {
                   ),
                 ),
                 // Delete Button
+                // Note: author is Tomáš Zgút
                 ElevatedButton(
                   onPressed: () {
                     _deleteConfirmDialog();
@@ -138,11 +144,11 @@ class _SessionScreenState extends State<SessionScreen> {
 
           Expanded(
             flex: 2,
-            child: _sessions.isNotEmpty
+            child: sessions.isNotEmpty
                 ? ListView.builder(
-                    itemCount: _sessions.length,
+                    itemCount: sessions.length,
                     itemBuilder: (context, index) {
-                      WorkSession session = _sessions[index];
+                      WorkSession session = sessions[index];
                       return Dismissible(
                         key: Key(
                             '${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
@@ -152,9 +158,9 @@ class _SessionScreenState extends State<SessionScreen> {
                           WorkSession deletedSession = session;
                           int deletedIndex = index;
 
-                          await _sessionController.deleteSession(session);
+                          await sessionController.deleteSession(session);
                           setState(() {
-                            _sessions.removeAt(
+                            sessions.removeAt(
                                 index); // Remove session from the list
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -165,12 +171,11 @@ class _SessionScreenState extends State<SessionScreen> {
                                   onPressed: () {
                                     // Re-add deleted session
                                     setState(() {
-                                      _sessions.insert(
+                                      sessions.insert(
                                           deletedIndex, deletedSession);
                                     });
-                                    _sessionController
-                                        .addWorkSessionFromSession(
-                                            deletedSession);
+                                    sessionController.addWorkSessionFromSession(
+                                        deletedSession);
                                   },
                                 )),
                           );
@@ -259,6 +264,8 @@ class _SessionScreenState extends State<SessionScreen> {
             padding: EdgeInsets.symmetric(
                 horizontal: 20.0), // Align Total and button consistently
           ),
+          // Template part of the session screen
+          //Note: author is Tomáš Zgút
           Expanded(
             flex: 1,
             child: ListView.builder(
@@ -283,6 +290,7 @@ class _SessionScreenState extends State<SessionScreen> {
                               .showSnackBar(
                                 SnackBar(
                                   content: const Text("Template deleted"),
+                                  // undo the template deletion
                                   action: SnackBarAction(
                                     label: 'Undo',
                                     onPressed: () {
@@ -300,10 +308,11 @@ class _SessionScreenState extends State<SessionScreen> {
                               )
                               .closed
                               .then((reason) {
+                            // after if the deletion was not undone, delete the template
                             if (reason != SnackBarClosedReason.action) {
                               _templateController
                                   .deleteTemplate(_templates[index]);
-                              loadSessions();
+                              _loadassetes();
                             }
                           });
                         },
@@ -314,7 +323,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         child:
-                            // Template item
+                            // Template button
                             _buildTemplateButton(index),
                       );
               },
@@ -326,6 +335,8 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
+  /// Private method for building a template button for a template a given [index]
+  /// Note: Author is Tomáš Zgút
   Padding _buildTemplateButton(int index) {
     var template = _templates[index];
     return Padding(
@@ -334,9 +345,9 @@ class _SessionScreenState extends State<SessionScreen> {
         constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
         child: ElevatedButton(
           onPressed: () {
-            _sessionController.addWorkSession(widget.jobId,
+            sessionController.addWorkSession(widget.jobId,
                 templateId: template.templateId);
-            loadSessions();
+            _loadassetes();
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -394,6 +405,8 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
+  /// Privte method for building a button that adds a new template
+  /// Note: Author is Tomáš Zgút
   Padding _buildNewTemplateButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -406,10 +419,10 @@ class _SessionScreenState extends State<SessionScreen> {
               MaterialPageRoute(
                 builder: (context) => AddSessionScreen(job: widget.job),
               ),
-            ).then((_) => loadSessions());
+            ).then((_) => _loadassetes());
           },
-          label:
-              const Text('Add template', style: TextStyle(color: Colors.black), maxLines: 1),
+          label: const Text('Add template',
+              style: TextStyle(color: Colors.black), maxLines: 1),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
             backgroundColor: Colors.white, // White button background
@@ -421,6 +434,9 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
+  /// Private method for picking a date for a new session
+  /// Note: this also creates the session from a template with [templateId]
+  /// Note: Author is Tomáš Zgút
   Future<void> _pickDate(BuildContext context, int templateId) async {
     final DateTime? newDate = await showDatePicker(
       context: context,
@@ -429,9 +445,9 @@ class _SessionScreenState extends State<SessionScreen> {
       lastDate: DateTime(2100),
     );
     if (newDate != null) {
-      _sessionController.addWorkSession(widget.jobId,
+      sessionController.addWorkSession(widget.jobId,
           templateId: templateId, date: newDate);
-      loadSessions();
+      _loadassetes();
     }
   }
 }
