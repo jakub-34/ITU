@@ -2,6 +2,7 @@
 // author: Tomáš Zgút
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:itu_app/views/components/template_button.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
@@ -69,7 +70,7 @@ class _SessionScreenState extends State<SessionScreen> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel',
                       style: TextStyle(color: Colors.black))),
-              ElevatedButton(
+              TextButton(
                   onPressed: () => {
                         _jobController.deleteJob(widget.jobId),
                         Navigator.pop(context),
@@ -308,7 +309,7 @@ class _SessionScreenState extends State<SessionScreen> {
                               )
                               .closed
                               .then((reason) {
-                            // after if the deletion was not undone, delete the template
+                            // if the deletion was not undone, delete the template
                             if (reason != SnackBarClosedReason.action) {
                               _templateController
                                   .deleteTemplate(_templates[index]);
@@ -337,71 +338,17 @@ class _SessionScreenState extends State<SessionScreen> {
 
   /// Private method for building a template button for a template a given [index]
   /// Note: Author is Tomáš Zgút
-  Padding _buildTemplateButton(int index) {
+  TemplateButton _buildTemplateButton(int index) {
     var template = _templates[index];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
-        child: ElevatedButton(
-          onPressed: () {
-            sessionController.addWorkSession(widget.jobId,
-                templateId: template.templateId);
-            _loadassetes();
-          },
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            backgroundColor: Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(60)),
-            shadowColor: Colors.black.withOpacity(0.1),
-            textStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Center(
-                child: Text(
-                  '${template.name}',
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _pickDate(context, template.templateId);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      DateFormat("EEE, d.m.").format(DateTime.now()),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.calendar_today,
-                      size: 16,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return TemplateButton(
+      templateName: template.name!,
+      newSession: () {
+        sessionController.addWorkSession(widget.jobId,
+            templateId: template.templateId);
+        _loadassetes();
+      },
+      datePicker: () => _pickDate,
+      currentDate: DateTime.now(),
     );
   }
 

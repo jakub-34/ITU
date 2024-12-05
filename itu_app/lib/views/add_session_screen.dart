@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:itu_app/controllers/template_controller.dart';
+import 'package:itu_app/views/components/from_submit_button.dart';
+import 'package:itu_app/views/components/form_input.dart';
 import '../models/job.dart';
 import '../services/hive_service.dart';
 
@@ -62,16 +64,8 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'Name of shift type',
-                    fillColor: Colors.white,
-                    constraints:
-                        const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(60)),
-                  ),
+                LabeledInputField(
+                  label: "Shift name",
                   validator: (value) => value!.isEmpty
                       ? 'Please set a name for the session type'
                       : null,
@@ -79,29 +73,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                 ),
                 _buildTimeFromField(context, 0, _startTimeController),
                 _buildTimeFromField(context, 1, _endTimeController),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0), // Align Total and button consistently
-                  child: ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        _submit();
-                      },
-                      label: const Text('Confirm',
-                          style: TextStyle(color: Colors.black)),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 138, vertical: 25),
-                        backgroundColor:
-                            Colors.white, // White button background
-                        textStyle: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                )
+                FormSubmitButton(onSubmit: _submit),
               ],
             ),
           ),
@@ -110,18 +82,12 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     );
   }
 
-  TextFormField _buildTimeFromField(
+  LabeledInputField _buildTimeFromField(
       BuildContext context, int index, TextEditingController controller) {
-    return TextFormField(
+    return LabeledInputField(
+      label: "Select ${index == 0 ? 'start' : 'end'} time",
       controller: controller,
-      decoration: InputDecoration(
-        labelText: 'Select ${index == 0 ? 'start' : 'end'} time',
-        suffixIcon: const Icon(Icons.access_time),
-        filled: true,
-        fillColor: Colors.white,
-        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 80),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(60)),
-      ),
+      suffixIcon: const Icon(Icons.access_time),
       readOnly: true,
       onTap: () => _selectTimeValue(context, index, controller),
       validator: (value) {

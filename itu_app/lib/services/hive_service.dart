@@ -213,8 +213,11 @@ class HiveService {
   }
 
   /// Method for creating a new uinque id for a session template
-  int getNewTemplateId() {
-    var templates = Hive.box<WorkSession>(templatesBox).values.toList();
+  int getNewTemplateId(int jobId) {
+    var templates = Hive.box<WorkSession>(templatesBox)
+        .values
+        .where((template) => template.jobId == jobId)
+        .toList();
     if (templates.isEmpty) {
       return 0;
     }

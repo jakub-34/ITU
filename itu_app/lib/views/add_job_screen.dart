@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:itu_app/views/components/from_submit_button.dart';
 import '../controllers/job_controller.dart';
+import 'components/form_input.dart';
 
 class AddJobScreen extends StatefulWidget {
   final JobController jobController;
@@ -32,7 +34,6 @@ class _AddJobScreenState extends State<AddJobScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: const Text('Add Job')),
       backgroundColor: const Color(0xFF121212),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -41,58 +42,59 @@ class _AddJobScreenState extends State<AddJobScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'Job name',
-                  constraints:
-                      const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60)),
-                ),
+              LabeledInputField(
+                label: "Job name",
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a title' : null,
                 onSaved: (value) => _title = value!,
               ),
-              TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'Pay in week',
-                  constraints:
-                      const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60)),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter a rate' : null,
+              LabeledInputField(
+                label: "Pay in Week",
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null) {
+                    return "Enter a pay rate";
+                  }
+                  var valueDouble = double.tryParse(value);
+                  if (value.isEmpty || valueDouble == null) {
+                    return "Please enter a valid pay";
+                  }
+
+                  if (valueDouble <= 0) {
+                    return "Pay rate must be positive!";
+                  }
+                  return null;
+                },
                 onSaved: (value) =>
                     _weekdayRate = double.tryParse(value!) ?? 0.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildOptNumberInput('Saturday Pay',
-                      (value) => _saturdayRate = double.tryParse(value) ?? 0.0),
+                  _buildOptNumberInput(
+                      labelText: "Saturday Pay",
+                      onSaved: (value) =>
+                          _saturdayRate = double.tryParse(value!) ?? 0.0),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
-                  _buildOptNumberInput('Sunday Pay',
-                      (value) => _sundayRate = double.tryParse(value) ?? 0.0),
+                  _buildOptNumberInput(
+                      labelText: "Sunday Pay",
+                      onSaved: (value) =>
+                          _sundayRate = double.tryParse(value!) ?? 0.0),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildOptNumberInput(
-                      'Break Time (min)',
-                      (value) => _breakHours =
-                          1 / (60 / (double.tryParse(value) ?? 0.0))),
+                      labelText: "Break Time (min)",
+                      onSaved: (value) => _breakHours =
+                          1 / (60 / (double.tryParse(value!) ?? 0.0))),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
                   _buildOptNumberInput(
-                      'Hours till break',
-                      (value) =>
-                          _hoursTillBreak = double.tryParse(value) ?? 0.0),
+                      labelText: "Hours till break",
+                      onSaved: (value) =>
+                          _hoursTillBreak = double.tryParse(value!) ?? 0.0),
                 ],
               ),
               CheckboxListTile.adaptive(
@@ -107,28 +109,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   });
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0), // Align Total and button consistently
-                child: ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      _submit();
-                    },
-                    label: const Text('Confirm',
-                        style: TextStyle(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 138, vertical: 25),
-                      backgroundColor: Colors.white, // White button background
-                      textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              )
+              FormSubmitButton(
+                onSubmit: _submit,
+              ),
             ],
           ),
         ),
@@ -136,18 +119,30 @@ class _AddJobScreenState extends State<AddJobScreen> {
     );
   }
 
-  TextFormField _buildOptNumberInput(String labelText, func) {
-    return TextFormField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
-        labelText: labelText,
-        hintText: '0',
-        constraints: const BoxConstraints(maxWidth: 180, maxHeight: 80),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(60)),
-      ),
-      keyboardType: TextInputType.number,
-      onSaved: func,
+  LabeledInputField _buildOptNumberInput(
+      {required String labelText, required void Function(String?) onSaved}) {
+    return LabeledInputField(
+      label: labelText,
+      width: 180,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      onSaved: onSaved,
+      hintText: "0",
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return null;
+        }
+        var valueDouble = double.tryParse(value);
+        if (value.isNotEmpty && valueDouble == null) {
+          return "invalid number";
+        }
+        if (valueDouble == null) {
+          return "invalid number";
+        }
+        if (valueDouble < 0) {
+          return "can't be negative";
+        }
+        return null;
+      },
     );
   }
 }

@@ -31,7 +31,7 @@ class TemplateController {
   /// Private method for creating a new session template
   WorkSession _createNewTemplate(
       int jobId, TimeOfDay startTime, TimeOfDay endTime, String name) {
-    var id = hiveService.getNewTemplateId();
+    var id = hiveService.getNewTemplateId(jobId);
     var now = DateTime.now();
     var addDay = _cmpTimeOfDay(startTime, endTime) ? 0 : 1;
     return WorkSession(
