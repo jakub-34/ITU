@@ -1,4 +1,4 @@
-// non_template_session_screen.dart
+// Author: Jakub Hrdlička
 import 'dart:async';
 
 import 'package:intl/intl.dart';

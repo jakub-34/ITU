@@ -84,6 +84,7 @@ class _SessionScreenState extends State<SessionScreen> {
         });
   }
 
+  // Author: Jakub Hrdlička
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,6 +140,7 @@ class _SessionScreenState extends State<SessionScreen> {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
+                // End of Tomáš's part
               ],
             ),
           ),
@@ -263,8 +265,11 @@ class _SessionScreenState extends State<SessionScreen> {
           ),
           const Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: 20.0), // Align Total and button consistently
+                horizontal: 20.0),
           ),
+          // End of Jakub's part
+
+
           // Template part of the session screen
           //Note: author is Tomáš Zgút
           Expanded(

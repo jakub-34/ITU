@@ -1,3 +1,4 @@
+// Authors: Jakub Hrdlička, Tomáš Žgút
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
 import '../models/job.dart';
@@ -30,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  // Author: Jakub Hrdlička
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,6 +141,10 @@ class _MainScreenState extends State<MainScreen> {
                 horizontal: 20), // Space between content and divider
             child: Divider(thickness: 4, color: Colors.grey[300]),
           ),
+          // End of Jakub's code
+
+
+          // Author: Tomáš Žgút
           Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: 20.0), // Align Total and button consistently
