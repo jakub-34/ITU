@@ -21,6 +21,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   double _breakHours = 0.0;
   double _hoursTillBreak = 0.0;
   bool _usetTemplates = false;
+  String? _hinText;
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -31,6 +32,26 @@ class _AddJobScreenState extends State<AddJobScreen> {
       WidgetsBinding.instance
           .addPostFrameCallback((_) => Navigator.pop(context));
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String? _validateWeekDayRate(String? rate) {
+    if (rate == null) {
+      return "Enter a pay rate";
+    }
+    var valueDouble = double.tryParse(rate);
+    if (rate.isEmpty || valueDouble == null) {
+      return "Please enter a valid pay";
+    }
+
+    if (valueDouble <= 0) {
+      return "Pay rate must be positive!";
+    }
+    return null;
   }
 
   @override
@@ -58,19 +79,15 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   label: "Pay in Week",
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) {
-                    if (value == null) {
-                      return "Enter a pay rate";
-                    }
-                    var valueDouble = double.tryParse(value);
-                    if (value.isEmpty || valueDouble == null) {
-                      return "Please enter a valid pay";
-                    }
-
-                    if (valueDouble <= 0) {
-                      return "Pay rate must be positive!";
-                    }
-                    return null;
+                  validator: (value) => _validateWeekDayRate(value),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value.isEmpty) {
+                        _hinText = null;
+                      } else if (_validateWeekDayRate(value) == null) {
+                        _hinText = value;
+                      }
+                    });
                   },
                   onSaved: (value) {
                     setState(() {
@@ -82,11 +99,13 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 children: [
                   _buildOptNumberInput(
                       labelText: "Saturday Pay",
+                      hintText: _hinText,
                       onSaved: (value) =>
                           _saturdayRate = double.tryParse(value!) ?? 0.0),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
                   _buildOptNumberInput(
                       labelText: "Sunday Pay",
+                      hintText: _hinText,
                       onSaved: (value) {
                         setState(() {
                           _sundayRate = double.tryParse(value!) ?? 0.0;
@@ -99,32 +118,42 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 children: [
                   _buildOptNumberInput(
                       labelText: "Break Time (min)",
+                      aditionalValidation: (value) =>
+                          value >= 60 * 24 ? "Break is too long!" : null,
                       onSaved: (value) {
                         setState(() {
                           _breakHours = (double.tryParse(value!) ?? 0.0) / 60;
                         });
                       }),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
-                  _buildOptNumberInput(
-                      labelText: "Hours till break",
-                      onSaved: (value) {
-                        setState(() {
-                          _hoursTillBreak = double.tryParse(value!) ?? 0.0;
-                        });
-                      }),
+                  Tooltip(
+                    message: "How long unttill a mandatory break",
+                    child: _buildOptNumberInput(
+                        labelText: "Hours till break",
+                        aditionalValidation: (value) =>
+                            value >= 24 ? "Shift is too long!" : null,
+                        onSaved: (value) {
+                          setState(() {
+                            _hoursTillBreak = double.tryParse(value!) ?? 0.0;
+                          });
+                        }),
+                  ),
                 ],
               ),
-              CheckboxListTile.adaptive(
-                  title: const Text(
-                    "use templates",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  value: _usetTemplates,
-                  onChanged: (newVal) {
-                    setState(() {
-                      _usetTemplates = newVal!;
-                    });
-                  }),
+              Tooltip(
+                message: "Recomended for jobs with consistent work schedule",
+                child: CheckboxListTile.adaptive(
+                    title: const Text(
+                      "use templates",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    value: _usetTemplates,
+                    onChanged: (newVal) {
+                      setState(() {
+                        _usetTemplates = newVal!;
+                      });
+                    }),
+              ),
               FormSubmitButton(
                 onSubmit: _submit,
               ),
@@ -135,14 +164,18 @@ class _AddJobScreenState extends State<AddJobScreen> {
     );
   }
 
-  LabeledInputField _buildOptNumberInput(
-      {required String labelText, required void Function(String?) onSaved}) {
+  LabeledInputField _buildOptNumberInput({
+    required String labelText,
+    required FormFieldSetter<String> onSaved,
+    String? Function(double)? aditionalValidation,
+    String? hintText,
+  }) {
     return LabeledInputField(
       label: labelText,
       width: 180,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       onSaved: onSaved,
-      hintText: "0",
+      hintText: hintText ?? "0",
       validator: (value) {
         if (value == null || value.isEmpty) {
           return null;
@@ -157,7 +190,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
         if (valueDouble < 0) {
           return "can't be negative";
         }
-        return null;
+        return aditionalValidation?.call(valueDouble);
       },
     );
   }

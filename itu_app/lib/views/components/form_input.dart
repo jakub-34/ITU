@@ -13,7 +13,7 @@ class LabeledInputField extends StatelessWidget {
   final bool readOnly;
   final Icon? suffixIcon;
   final double width;
-
+  final ValueChanged<String>? onChanged;
   const LabeledInputField({
     Key? key,
     this.width = 375,
@@ -21,6 +21,7 @@ class LabeledInputField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.validator,
     this.onSaved,
+    this.onChanged,
     this.hintText,
     this.onTap,
     this.readOnly = false,
@@ -45,6 +46,7 @@ class LabeledInputField extends StatelessWidget {
           readOnly: readOnly,
           onTap: onTap,
           validator: validator,
+          onChanged: onChanged,
           onSaved: onSaved,
           decoration: InputDecoration(
             filled: true,
