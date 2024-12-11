@@ -138,8 +138,10 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                     itemBuilder: (context, index) {
                       WorkSession session = _sessions[index];
                       return Dismissible(
-                        key: Key('${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
-                        direction: DismissDirection.horizontal, // Allow both swipe directions
+                        key: Key(
+                            '${session.jobId}-${session.sessionId}'), // Unique key combining jobId and sessionId
+                        direction: DismissDirection
+                            .horizontal, // Allow both swipe directions
                         confirmDismiss: (direction) async {
                           if (direction == DismissDirection.endToStart) {
                             // Handle left swipe to delete
@@ -148,7 +150,8 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                             int deletedIndex = index;
                             await _sessionController.deleteSession(session);
                             setState(() {
-                              _sessions.removeAt(index); // Remove session from the list
+                              _sessions.removeAt(
+                                  index); // Remove session from the list
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -163,7 +166,7 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                                       });
                                       _sessionController
                                           .addWorkSessionFromSession(
-                                          deletedSession);
+                                              deletedSession);
                                     },
                                   )),
                             );
@@ -171,17 +174,21 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                           } else if (direction == DismissDirection.startToEnd) {
                             // Handle right swipe to create a new session
                             var newSession = WorkSession(
-                              sessionId: _sessionController.hiveService.getNewSessionId(),
+                              sessionId: _sessionController.hiveService
+                                  .getNewSessionId(),
                               jobId: session.jobId,
                               date: DateTime.now(), // Use today's date
                               startTime: session.startTime,
                               endTime: session.endTime,
                             );
-                            _sessionController.addWorkSessionFromSession(newSession);
+                            _sessionController
+                                .addWorkSessionFromSession(newSession);
                             // Reload sessions to immediately reflect the new session
                             loadSessions();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('New session created for today')),
+                              SnackBar(
+                                  content:
+                                      Text('New session created for today')),
                             );
                             return false; // Return false to prevent the widget from being dismissed
                           }
@@ -200,27 +207,34 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 410, maxHeight: 72),
+                            constraints: const BoxConstraints(
+                                maxWidth: 410, maxHeight: 72),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 15),
                               decoration: BoxDecoration(
                                 color: Colors.white, // White background
-                                borderRadius: BorderRadius.circular(60), // Rounded corners
+                                borderRadius: BorderRadius.circular(
+                                    60), // Rounded corners
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
                                     blurRadius: 4,
-                                    offset: const Offset(0, 2), // Subtle shadow for depth
+                                    offset: const Offset(
+                                        0, 2), // Subtle shadow for depth
                                   ),
                                 ],
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
@@ -281,15 +295,16 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddNonTemplateSession(job: widget.job),
+                      builder: (context) =>
+                          AddNonTemplateSession(job: widget.job),
                     ),
                   ).then((_) => loadSessions());
                 },
                 label: const Text('Add workday',
                     style: TextStyle(color: Colors.black), maxLines: 1),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 138, vertical: 25),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
                   backgroundColor: Colors.white, // White button background
                   textStyle: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),

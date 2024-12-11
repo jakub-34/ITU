@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/job.dart';
 import '../controllers/session_controller.dart';
+import '../models/job.dart';
 import '../services/hive_service.dart';
+import 'components/form_input.dart';
+import 'components/from_submit_button.dart';
 
 class AddNonTemplateSession extends StatefulWidget {
   final Job job;
@@ -28,18 +30,19 @@ class _AddNonTemplateSessionState extends State<AddNonTemplateSession> {
     _dateController.text = DateFormat('dd.MM.yyyy').format(_selectedDate);
   }
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final sessionController = SessionController(HiveService());
-      sessionController.addWorkSession(
+      await sessionController.addWorkSession(
         widget.job.id, // Ensure jobId is passed correctly
         date: _selectedDate,
         startTime: _times[0]!,
         endTime: _times[1]!,
         templateId: null,
       );
-      Navigator.pop(context);
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => Navigator.pop(context));
     }
   }
 
@@ -92,43 +95,18 @@ class _AddNonTemplateSessionState extends State<AddNonTemplateSession> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextFormField(
-                  controller: _dateController,
-                  decoration: InputDecoration(
-                    labelText: 'Select date',
-                    suffixIcon: const Icon(Icons.calendar_today),
-                    filled: true,
-                    fillColor: Colors.white,
-                    constraints:
-                    const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(60)),
-                  ),
+                LabeledInputField(
+                  label: 'Select date',
+                  suffixIcon: const Icon(Icons.calendar_today),
                   readOnly: true,
+                  controller: _dateController,
                   onTap: () => _selectDateValue(context),
                   validator: (value) =>
-                  value!.isEmpty ? 'Please select a date' : null,
+                      value!.isEmpty ? 'Please select a date' : null,
                 ),
                 _buildTimeFromField(context, 0, _startTimeController),
                 _buildTimeFromField(context, 1, _endTimeController),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 375, maxHeight: 80),
-                    child: ElevatedButton.icon(
-                      onPressed: _submit,
-                      label: const Text('Confirm',
-                          style: TextStyle(color: Colors.black)),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 138, vertical: 25),
-                        backgroundColor: Colors.white,
-                        textStyle: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                )
+                FormSubmitButton(onSubmit: _submit),
               ],
             ),
           ),
@@ -137,18 +115,12 @@ class _AddNonTemplateSessionState extends State<AddNonTemplateSession> {
     );
   }
 
-  TextFormField _buildTimeFromField(
+  LabeledInputField _buildTimeFromField(
       BuildContext context, int index, TextEditingController controller) {
-    return TextFormField(
+    return LabeledInputField(
+      label: "Select ${index == 0 ? 'start' : 'end'} time",
       controller: controller,
-      decoration: InputDecoration(
-        labelText: 'Select ${index == 0 ? 'start' : 'end'} time',
-        suffixIcon: const Icon(Icons.access_time),
-        filled: true,
-        fillColor: Colors.white,
-        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 80),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(60)),
-      ),
+      suffixIcon: const Icon(Icons.access_time),
       readOnly: true,
       onTap: () => _selectTimeValue(context, index, controller),
       validator: (value) {

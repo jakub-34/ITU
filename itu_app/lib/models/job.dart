@@ -46,9 +46,9 @@ class Job {
   double getRateForSession(WorkSession session) {
     var sessionDate = session.date;
     var rate = weekDayRate;
-    if (sessionDate.day == DateTime.saturday && saturdayRate != 0.0) {
+    if (sessionDate.weekday == DateTime.saturday && saturdayRate != 0.0) {
       rate = saturdayRate;
-    } else if (sessionDate.day == DateTime.sunday && sundayRate != 0.0) {
+    } else if (sessionDate.weekday == DateTime.sunday && sundayRate != 0.0) {
       rate = sundayRate;
     }
     return rate;

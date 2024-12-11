@@ -2,7 +2,6 @@
 // author: Tomáš Zgút
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'package:itu_app/views/components/template_button.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
@@ -11,6 +10,7 @@ import '../controllers/session_controller.dart';
 import '../models/job.dart';
 import '../models/work_session.dart';
 import '../services/hive_service.dart';
+import 'components/template_widget.dart';
 import 'add_session_screen.dart';
 
 /// Class holds the session screen
@@ -264,11 +264,9 @@ class _SessionScreenState extends State<SessionScreen> {
             child: Divider(thickness: 4, color: Colors.grey[300]),
           ),
           const Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
           ),
           // End of Jakub's part
-
 
           // Template part of the session screen
           //Note: author is Tomáš Zgút
@@ -330,7 +328,7 @@ class _SessionScreenState extends State<SessionScreen> {
                         ),
                         child:
                             // Template button
-                            _buildTemplateButton(index),
+                            _buildTemplateWidget(index),
                       );
               },
             ),
@@ -343,16 +341,16 @@ class _SessionScreenState extends State<SessionScreen> {
 
   /// Private method for building a template button for a template a given [index]
   /// Note: Author is Tomáš Zgút
-  TemplateButton _buildTemplateButton(int index) {
+  Template _buildTemplateWidget(int index) {
     var template = _templates[index];
-    return TemplateButton(
+    return Template(
       templateName: template.name!,
       newSession: () {
         sessionController.addWorkSession(widget.jobId,
             templateId: template.templateId);
         _loadassetes();
       },
-      datePicker: () => _pickDate,
+      datePicker: () => _pickDate(context, template.templateId),
       currentDate: DateTime.now(),
     );
   }

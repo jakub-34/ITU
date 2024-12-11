@@ -7,7 +7,7 @@ class LabeledInputField extends StatelessWidget {
   final TextInputType keyboardType;
   final FormFieldValidator<String>? validator;
   final FormFieldSetter<String>? onSaved;
-  final void Function()? onTap;
+  final VoidCallback? onTap;
   final TextEditingController? controller;
   final String? hintText;
   final bool readOnly;

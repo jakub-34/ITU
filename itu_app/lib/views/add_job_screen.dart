@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:itu_app/views/components/from_submit_button.dart';
 import '../controllers/job_controller.dart';
+import 'components/from_submit_button.dart';
 import 'components/form_input.dart';
 
 class AddJobScreen extends StatefulWidget {
@@ -22,12 +22,14 @@ class _AddJobScreenState extends State<AddJobScreen> {
   double _hoursTillBreak = 0.0;
   bool _usetTemplates = false;
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      widget.jobController.addJob(_title, _weekdayRate, _saturdayRate,
+      await widget.jobController.addJob(_title, _weekdayRate, _saturdayRate,
           _sundayRate, _breakHours, _hoursTillBreak, _usetTemplates);
-      Navigator.pop(context);
+
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => Navigator.pop(context));
     }
   }
 
@@ -46,29 +48,35 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 label: "Job name",
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a title' : null,
-                onSaved: (value) => _title = value!,
+                onSaved: (value) {
+                  setState(() {
+                    _title = value!;
+                  });
+                },
               ),
               LabeledInputField(
-                label: "Pay in Week",
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                validator: (value) {
-                  if (value == null) {
-                    return "Enter a pay rate";
-                  }
-                  var valueDouble = double.tryParse(value);
-                  if (value.isEmpty || valueDouble == null) {
-                    return "Please enter a valid pay";
-                  }
+                  label: "Pay in Week",
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) {
+                    if (value == null) {
+                      return "Enter a pay rate";
+                    }
+                    var valueDouble = double.tryParse(value);
+                    if (value.isEmpty || valueDouble == null) {
+                      return "Please enter a valid pay";
+                    }
 
-                  if (valueDouble <= 0) {
-                    return "Pay rate must be positive!";
-                  }
-                  return null;
-                },
-                onSaved: (value) =>
-                    _weekdayRate = double.tryParse(value!) ?? 0.0,
-              ),
+                    if (valueDouble <= 0) {
+                      return "Pay rate must be positive!";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      _weekdayRate = double.tryParse(value!) ?? 0.0;
+                    });
+                  }),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -79,8 +87,11 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
                   _buildOptNumberInput(
                       labelText: "Sunday Pay",
-                      onSaved: (value) =>
-                          _sundayRate = double.tryParse(value!) ?? 0.0),
+                      onSaved: (value) {
+                        setState(() {
+                          _sundayRate = double.tryParse(value!) ?? 0.0;
+                        });
+                      })
                 ],
               ),
               Row(
@@ -88,27 +99,32 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 children: [
                   _buildOptNumberInput(
                       labelText: "Break Time (min)",
-                      onSaved: (value) => _breakHours =
-                          1 / (60 / (double.tryParse(value!) ?? 0.0))),
+                      onSaved: (value) {
+                        setState(() {
+                          _breakHours = (double.tryParse(value!) ?? 0.0) / 60;
+                        });
+                      }),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
                   _buildOptNumberInput(
                       labelText: "Hours till break",
-                      onSaved: (value) =>
-                          _hoursTillBreak = double.tryParse(value!) ?? 0.0),
+                      onSaved: (value) {
+                        setState(() {
+                          _hoursTillBreak = double.tryParse(value!) ?? 0.0;
+                        });
+                      }),
                 ],
               ),
               CheckboxListTile.adaptive(
-                title: const Text(
-                  "use templates",
-                  style: TextStyle(color: Colors.white),
-                ),
-                value: _usetTemplates,
-                onChanged: (bool? newVal) {
-                  setState(() {
-                    _usetTemplates = newVal!;
-                  });
-                },
-              ),
+                  title: const Text(
+                    "use templates",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  value: _usetTemplates,
+                  onChanged: (newVal) {
+                    setState(() {
+                      _usetTemplates = newVal!;
+                    });
+                  }),
               FormSubmitButton(
                 onSubmit: _submit,
               ),

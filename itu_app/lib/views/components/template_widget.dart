@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class TemplateButton extends StatelessWidget {
+class Template extends StatelessWidget {
   final String templateName;
   final VoidCallback newSession;
   final VoidCallback datePicker;
   final DateTime currentDate;
 
-  const TemplateButton({
+  const Template({
     Key? key,
     required this.templateName,
     required this.newSession,

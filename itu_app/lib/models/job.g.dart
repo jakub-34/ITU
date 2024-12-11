@@ -24,13 +24,14 @@ class JobAdapter extends TypeAdapter<Job> {
       sundayRate: fields[3] as double,
       breakHours: fields[5] as double,
       hoursTillBreak: fields[6] as double,
+      usesTepmates: fields[7] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Job obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class JobAdapter extends TypeAdapter<Job> {
       ..writeByte(5)
       ..write(obj.breakHours)
       ..writeByte(6)
-      ..write(obj.hoursTillBreak);
+      ..write(obj.hoursTillBreak)
+      ..writeByte(7)
+      ..write(obj.usesTepmates);
   }
 
   @override

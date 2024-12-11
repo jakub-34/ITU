@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:itu_app/controllers/template_controller.dart';
-import 'package:itu_app/views/components/from_submit_button.dart';
-import 'package:itu_app/views/components/form_input.dart';
+import '../controllers/template_controller.dart';
 import '../models/job.dart';
 import '../services/hive_service.dart';
+import 'components/form_input.dart';
+import 'components/from_submit_button.dart';
 
 class AddSessionScreen extends StatefulWidget {
   final Job job;
@@ -21,13 +21,15 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   final _startTimeController = TextEditingController();
   final _endTimeController = TextEditingController();
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final templateController = TemplateController(HiveService());
-      templateController.addTemplate(
+      await templateController.addTemplate(
           widget.job.id, _times[0]!, _times[1]!, _templateName);
-      Navigator.pop(context);
+
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => Navigator.pop(context));
     }
   }
 

@@ -143,7 +143,6 @@ class _MainScreenState extends State<MainScreen> {
           ),
           // End of Jakub's code
 
-
           // Author: Tomáš Žgút
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -158,9 +157,8 @@ class _MainScreenState extends State<MainScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 120, vertical: 25),
                     decoration: BoxDecoration(
-                      color: Colors.white, // White background
-                      borderRadius: BorderRadius.circular(
-                          60), // Rounded corners like button
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(60),
                     ),
                     child: Center(
                       child: Text(
@@ -173,8 +171,7 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                    height: 30), // Spacing between "Total" and button
+                const SizedBox(height: 30),
                 // Add New Job button
                 ConstrainedBox(
                   constraints:
