@@ -144,7 +144,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 message: "Recomended for jobs with consistent work schedule",
                 child: CheckboxListTile.adaptive(
                     title: const Text(
-                      "use templates",
+                      "Use templates",
                       style: TextStyle(color: Colors.white),
                     ),
                     value: _usetTemplates,
