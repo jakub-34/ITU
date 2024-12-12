@@ -66,7 +66,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               LabeledInputField(
-                label: "Job name",
+                label: "Job name*",
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a title' : null,
                 onSaved: (value) {
@@ -76,7 +76,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 },
               ),
               LabeledInputField(
-                  label: "Pay in Week",
+                  label: "Pay in Week*",
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   validator: (value) => _validateWeekDayRate(value),
