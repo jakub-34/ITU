@@ -26,7 +26,7 @@ class SessionController {
     } else {
       var startDateTime = _cnvrtToDatetime(startTime!, date);
       var endDateTime = _cnvrtToDatetime(endTime!, date);
-      if (endDateTime.compareTo(startDateTime) < 0) {
+      if (endDateTime.compareTo(startDateTime) <= 0) {
         endDateTime = endDateTime.add(const Duration(days: 1));
       }
       session = _createNewSession(jobId, date, startDateTime, endDateTime);

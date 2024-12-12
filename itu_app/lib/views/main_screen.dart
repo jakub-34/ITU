@@ -1,4 +1,4 @@
-// Authors: Jakub Hrdlička, Tomáš Žgút
+// Authors: Jakub Hrdlička, Tomáš Zgút
 import 'package:flutter/material.dart';
 import '../controllers/job_controller.dart';
 import '../models/job.dart';
@@ -143,7 +143,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           // End of Jakub's code
 
-          // Author: Tomáš Žgút
+          // Author: Tomáš Zgút
           Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: 20.0), // Align Total and button consistently
