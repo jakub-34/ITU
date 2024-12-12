@@ -57,7 +57,6 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   /// Private method for showing the confirmation dialog for deleting a job
-  /// Note: Author is Tomáš Zgút
   Future<void> _deleteConfirmDialog() async {
     return await showDialog(
         context: context,
@@ -122,7 +121,6 @@ class _SessionScreenState extends State<SessionScreen> {
                   ),
                 ),
                 // Delete Button
-                // Note: author is Tomáš Zgút
                 ElevatedButton(
                   onPressed: () {
                     _deleteConfirmDialog();
@@ -140,7 +138,6 @@ class _SessionScreenState extends State<SessionScreen> {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-                // End of Tomáš's part
               ],
             ),
           ),
@@ -361,23 +358,31 @@ class _SessionScreenState extends State<SessionScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 375, maxHeight: 72),
+        constraints: const BoxConstraints(maxWidth: 380, maxHeight: 75),
         child: ElevatedButton.icon(
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddSessionScreen(job: widget.job),
+                builder: (context) =>
+                    AddSessionScreen(job: widget.job),
               ),
-            ).then((_) => _loadassetes());
+            ).then((_) => _loadassetes()); // Reload jobs after adding a job
           },
-          label: const Text('Add template',
-              style: TextStyle(color: Colors.black), maxLines: 1),
+          label: const Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'Add template',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ),
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
+            fixedSize: const Size(500, 150),
             backgroundColor: Colors.white, // White button background
-            textStyle:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            padding: EdgeInsets.zero,
           ),
         ),
       ),

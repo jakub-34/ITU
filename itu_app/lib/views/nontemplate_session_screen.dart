@@ -289,7 +289,7 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 475, maxHeight: 72),
+              constraints: const BoxConstraints(maxWidth: 380, maxHeight: 75),
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
@@ -298,16 +298,22 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                       builder: (context) =>
                           AddNonTemplateSession(job: widget.job),
                     ),
-                  ).then((_) => loadSessions());
+                  ).then((_) => loadSessions()); // Reload jobs after adding a job
                 },
-                label: const Text('Add workday',
-                    style: TextStyle(color: Colors.black), maxLines: 1),
+                label: const Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Add workday',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 138, vertical: 25),
+                  fixedSize: const Size(500, 150),
                   backgroundColor: Colors.white, // White button background
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  padding: EdgeInsets.zero,
                 ),
               ),
             ),

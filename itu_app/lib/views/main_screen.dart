@@ -151,11 +151,8 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 // Total Section styled like the button
                 ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxWidth: 375, maxHeight: 72),
+                  constraints: const BoxConstraints(maxWidth: 380, maxHeight: 75),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 120, vertical: 25),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(60),
@@ -164,18 +161,19 @@ class _MainScreenState extends State<MainScreen> {
                       child: Text(
                         'Total: ${jobController.getMonthlyEarnings().toStringAsFixed(2)}€',
                         style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 30),
                 // Add New Job button
                 ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxWidth: 500, maxHeight: 150),
+                  constraints: const BoxConstraints(maxWidth: 380, maxHeight: 75),
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(
@@ -184,17 +182,22 @@ class _MainScreenState extends State<MainScreen> {
                           builder: (context) =>
                               AddJobScreen(jobController: jobController),
                         ),
-                      ).then(
-                          (_) => loadJobs()); // Reload jobs after adding a job
+                      ).then((_) => loadJobs()); // Reload jobs after adding a job
                     },
-                    label: const Text('Add new job',
-                        style: TextStyle(color: Colors.black), maxLines: 1),
+                    label: const Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Add new job',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 138, vertical: 25),
+                      fixedSize: const Size(500, 150),
                       backgroundColor: Colors.white, // White button background
-                      textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
                 ),
