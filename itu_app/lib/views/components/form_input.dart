@@ -15,7 +15,7 @@ class LabeledInputField extends StatelessWidget {
   final double width;
   final ValueChanged<String>? onChanged;
   const LabeledInputField({
-    Key? key,
+    super.key,
     this.width = 375,
     required this.label,
     this.keyboardType = TextInputType.text,
@@ -27,7 +27,7 @@ class LabeledInputField extends StatelessWidget {
     this.readOnly = false,
     this.controller,
     this.suffixIcon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

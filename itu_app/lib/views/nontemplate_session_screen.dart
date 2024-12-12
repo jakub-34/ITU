@@ -186,7 +186,7 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                             // Reload sessions to immediately reflect the new session
                             loadSessions();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                   content:
                                       Text('New session created for today')),
                             );

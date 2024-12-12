@@ -8,12 +8,12 @@ class Template extends StatelessWidget {
   final DateTime currentDate;
 
   const Template({
-    Key? key,
+    super.key,
     required this.templateName,
     required this.newSession,
     required this.datePicker,
     required this.currentDate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
