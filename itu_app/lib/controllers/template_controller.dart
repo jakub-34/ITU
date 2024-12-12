@@ -18,13 +18,20 @@ class TemplateController {
   }
 
   /// Private method for comparing two `TimeOfDay` objects
+  /// method returns true if [first] is less of equal to [second]
   bool _cmpTimeOfDay(TimeOfDay fisrt, TimeOfDay second) {
     if (fisrt.hour < second.hour) {
       return true;
     }
+
     if (fisrt.minute < second.minute) {
       return true;
     }
+
+    if (fisrt.hour == second.hour && fisrt.minute == second.minute) {
+      return true;
+    }
+
     return false;
   }
 
