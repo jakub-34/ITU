@@ -83,6 +83,16 @@ class _SessionScreenState extends State<SessionScreen> {
         });
   }
 
+  // Author: Tomáš Zgút
+  @override
+  void dispose() {
+    for (var removed in _recentlyDeletedTemplates) {
+      _templateController.deleteTemplate(removed.item2);
+    }
+    _recentlyDeletedTemplates.clear();
+    super.dispose();
+  }
+
   // Author: Jakub Hrdlička
   @override
   Widget build(BuildContext context) {
@@ -99,6 +109,7 @@ class _SessionScreenState extends State<SessionScreen> {
                 // Job Title Bubble
                 ElevatedButton(
                   onPressed: () {
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -311,8 +322,9 @@ class _SessionScreenState extends State<SessionScreen> {
                               .then((reason) {
                             // if the deletion was not undone, delete the template
                             if (reason != SnackBarClosedReason.action) {
-                              _templateController
-                                  .deleteTemplate(_templates[index]);
+                              _templateController.deleteTemplate(
+                                  _recentlyDeletedTemplates.last.item2);
+                              _recentlyDeletedTemplates.removeLast();
                               _loadassetes();
                             }
                           });
@@ -361,11 +373,11 @@ class _SessionScreenState extends State<SessionScreen> {
         constraints: const BoxConstraints(maxWidth: 380, maxHeight: 75),
         child: ElevatedButton.icon(
           onPressed: () {
+            ScaffoldMessenger.of(context).clearSnackBars();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    AddSessionScreen(job: widget.job),
+                builder: (context) => AddSessionScreen(job: widget.job),
               ),
             ).then((_) => _loadassetes()); // Reload jobs after adding a job
           },
@@ -381,7 +393,8 @@ class _SessionScreenState extends State<SessionScreen> {
           style: ElevatedButton.styleFrom(
             fixedSize: const Size(500, 150),
             backgroundColor: Colors.white, // White button background
-            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textStyle:
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             padding: EdgeInsets.zero,
           ),
         ),

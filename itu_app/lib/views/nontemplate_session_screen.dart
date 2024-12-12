@@ -87,6 +87,7 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                 // Job Title Bubble
                 ElevatedButton(
                   onPressed: () {
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -298,7 +299,8 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                       builder: (context) =>
                           AddNonTemplateSession(job: widget.job),
                     ),
-                  ).then((_) => loadSessions()); // Reload jobs after adding a job
+                  ).then(
+                      (_) => loadSessions()); // Reload jobs after adding a job
                 },
                 label: const Center(
                   child: FittedBox(
@@ -312,7 +314,8 @@ class _NonTemplateSessionScreenState extends State<NonTemplateSessionScreen> {
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(500, 150),
                   backgroundColor: Colors.white, // White button background
-                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                   padding: EdgeInsets.zero,
                 ),
               ),

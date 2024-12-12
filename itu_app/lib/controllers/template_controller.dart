@@ -28,10 +28,6 @@ class TemplateController {
       return true;
     }
 
-    if (fisrt.hour == second.hour && fisrt.minute == second.minute) {
-      return true;
-    }
-
     return false;
   }
 
