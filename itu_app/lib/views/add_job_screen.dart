@@ -94,51 +94,69 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       _weekdayRate = double.tryParse(value!) ?? 0.0;
                     });
                   }),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildOptNumberInput(
-                      labelText: "Saturday Pay",
-                      hintText: _hinText,
-                      onSaved: (value) =>
-                          _saturdayRate = double.tryParse(value!) ?? 0.0),
-                  const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
-                  _buildOptNumberInput(
-                      labelText: "Sunday Pay",
-                      hintText: _hinText,
-                      onSaved: (value) {
-                        setState(() {
-                          _sundayRate = double.tryParse(value!) ?? 0.0;
-                        });
-                      })
-                ],
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 375),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: _buildOptNumberInput(
+                          labelText: "Saturday Pay",
+                          hintText: _hinText,
+                          onSaved: (value) =>
+                              _saturdayRate = double.tryParse(value!) ?? 0.0),
+                    ),
+                    const SizedBox(width: 15),
+                    Flexible(
+                      child: _buildOptNumberInput(
+                          labelText: "Sunday Pay",
+                          hintText: _hinText,
+                          onSaved: (value) {
+                            setState(() {
+                              _sundayRate = double.tryParse(value!) ?? 0.0;
+                            });
+                          }),
+                    )
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildOptNumberInput(
-                      labelText: "Break Time (min)",
-                      aditionalValidation: (value) =>
-                          value >= 60 * 24 ? "Break is too long!" : null,
-                      onSaved: (value) {
-                        setState(() {
-                          _breakHours = (double.tryParse(value!) ?? 0.0) / 60;
-                        });
-                      }),
-                  const Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
-                  Tooltip(
-                    message: "How long unttill a mandatory break",
-                    child: _buildOptNumberInput(
-                        labelText: "Hours till break",
-                        aditionalValidation: (value) =>
-                            value >= 24 ? "Shift is too long!" : null,
-                        onSaved: (value) {
-                          setState(() {
-                            _hoursTillBreak = double.tryParse(value!) ?? 0.0;
-                          });
-                        }),
-                  ),
-                ],
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 375),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: _buildOptNumberInput(
+                          labelText: "Break Time (min)",
+                          aditionalValidation: (value) =>
+                              value >= 60 * 24 ? "Break is too long!" : null,
+                          onSaved: (value) {
+                            setState(() {
+                              _breakHours =
+                                  (double.tryParse(value!) ?? 0.0) / 60;
+                            });
+                          }),
+                    ),
+                    const SizedBox(width: 15),
+                    Flexible(
+                      child: Tooltip(
+                        message: "How long unttill a mandatory break",
+                        child: _buildOptNumberInput(
+                            labelText: "Hours till break",
+                            aditionalValidation: (value) =>
+                                value >= 24 ? "Shift is too long!" : null,
+                            onSaved: (value) {
+                              setState(() {
+                                _hoursTillBreak =
+                                    double.tryParse(value!) ?? 0.0;
+                              });
+                            }),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Tooltip(
                 message: "Recomended for jobs with consistent work schedule",
