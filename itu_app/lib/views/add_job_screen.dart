@@ -39,11 +39,20 @@ class _AddJobScreenState extends State<AddJobScreen> {
     super.dispose();
   }
 
+  /// helper method for replacing "," with "." in [decimalString]
+  /// this is necessary since some devices localization doesn't allow them
+  /// to input the "." character into a number field
+  String _localizeDecimalString(String decimalString) {
+    return decimalString.replaceAll(RegExp(","), ".");
+  }
+
+  /// hepler method that validates the [rate]
   String? _validateWeekDayRate(String? rate) {
     if (rate == null) {
       return "Enter a pay rate";
     }
-    var valueDouble = double.tryParse(rate);
+    var localizedRate = _localizeDecimalString(rate);
+    var valueDouble = double.tryParse(localizedRate);
     if (rate.isEmpty || valueDouble == null) {
       return "Please enter a valid pay";
     }
@@ -91,7 +100,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   },
                   onSaved: (value) {
                     setState(() {
-                      _weekdayRate = double.tryParse(value!) ?? 0.0;
+                      _weekdayRate =
+                          double.tryParse(_localizeDecimalString(value!)) ??
+                              0.0;
                     });
                   }),
               ConstrainedBox(
@@ -104,8 +115,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       child: _buildOptNumberInput(
                           labelText: "Saturday Pay",
                           hintText: _hinText,
-                          onSaved: (value) =>
-                              _saturdayRate = double.tryParse(value!) ?? 0.0),
+                          onSaved: (value) => _saturdayRate =
+                              double.tryParse(_localizeDecimalString(value!)) ??
+                                  0.0),
                     ),
                     const SizedBox(width: 15),
                     Flexible(
@@ -114,7 +126,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           hintText: _hinText,
                           onSaved: (value) {
                             setState(() {
-                              _sundayRate = double.tryParse(value!) ?? 0.0;
+                              _sundayRate = double.tryParse(
+                                      _localizeDecimalString(value!)) ??
+                                  0.0;
                             });
                           }),
                     )
@@ -134,8 +148,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               value >= 60 * 24 ? "Break is too long!" : null,
                           onSaved: (value) {
                             setState(() {
-                              _breakHours =
-                                  (double.tryParse(value!) ?? 0.0) / 60;
+                              _breakHours = (double.tryParse(
+                                          _localizeDecimalString(value!)) ??
+                                      0.0) /
+                                  60;
                             });
                           }),
                     ),
@@ -149,8 +165,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                 value >= 24 ? "Shift is too long!" : null,
                             onSaved: (value) {
                               setState(() {
-                                _hoursTillBreak =
-                                    double.tryParse(value!) ?? 0.0;
+                                _hoursTillBreak = double.tryParse(
+                                        _localizeDecimalString(value!)) ??
+                                    0.0;
                               });
                             }),
                       ),
@@ -182,6 +199,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
     );
   }
 
+  ///method duils an optiona number input
   LabeledInputField _buildOptNumberInput({
     required String labelText,
     required FormFieldSetter<String> onSaved,
@@ -198,15 +216,16 @@ class _AddJobScreenState extends State<AddJobScreen> {
         if (value == null || value.isEmpty) {
           return null;
         }
-        var valueDouble = double.tryParse(value);
+        var localizedNum = _localizeDecimalString(value);
+        var valueDouble = double.tryParse(localizedNum);
         if (value.isNotEmpty && valueDouble == null) {
-          return "invalid number";
+          return "Invalid number";
         }
         if (valueDouble == null) {
-          return "invalid number";
+          return "Invalid number";
         }
         if (valueDouble < 0) {
-          return "can't be negative";
+          return "Can't be negative";
         }
         return aditionalValidation?.call(valueDouble);
       },
